@@ -8,8 +8,8 @@ This project implements a trading bot using Flask, the Alpaca API, and WebSocket
 ## Features
 - **Market Order Execution**: Place buy/sell market orders through Alpaca’s API.
 - **Real-time WebSocket Data**: Receive real-time trade, quote, and bar data for chosen symbols.
-- **Webhook for TradingView**: Integrates with TradingView alerts via a webhook endpoint.
-- **Flask Interface**: Simple UI to start WebSocket and manually place trades.
+- **Webhook for TradingView**: Integrates with TradingView alerts via a webhook endpoint that allows trades to be places automatically.
+- **Flask Interface**: Simple UI that allows you to place manual trades if needed.
 
 ## Requirements
 - **Python** 3.7+
