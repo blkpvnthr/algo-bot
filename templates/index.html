@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trading Bot</title>
+</head>
+<body>
+    <h1>Welcome to the Trading Bot API!</h1>
+    <form action="/start" method="post">
+        <button type="submit">Start WebSocket</button>
+    </form>
+    <form action="/trade" method="post">
+        <input type="text" name="symbol" placeholder="Symbol" required>
+        <input type="number" name="qty" placeholder="Quantity" required>
+        <select name="side">
+            <option value="buy">Buy</option>
+            <option value="sell">Sell</option>
+        </select>
+        <button type="submit">Execute Trade</button>
+    </form>
+    <div id="websocket-data"></div>
+
+    <script>
+        const ws = new WebSocket('wss://stream.data.alpaca.markets/v2/iex');
+
+        ws.onopen = function() {
+            console.log('WebSocket connection opened');
+            const authData = {
+                action: "auth",
+                key: "PKOPOB9GVBN5KKLGX026",
+                secret: "TvFzptVU4xcNPFCo9f9YYSg3ritPQQ6RNAl0uunT"
+            };
+            ws.send(JSON.stringify(authData));
+
+            const subscribeMessage = {
+                action: "subscribe",
+                trades: ["QBTS"],
+                quotes: ["QBTS"],
+                bars: ["QBTS"]
+            };
+            ws.send(JSON.stringify(subscribeMessage));
+        };
+
+        ws.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            console.log('WebSocket message received:', data);
+
+            const div = document.getElementById('websocket-data');
+            div.innerHTML += '<pre>' + JSON.stringify(data, null, 4) + '</pre>';
+        };
+    </script>
+</body>
+</html>
