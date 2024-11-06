@@ -35,7 +35,7 @@ This project implements a trading bot using Flask, the Alpaca API, and WebSocket
 
 4. **Run the Application**:
     ```bash
-    python app.py
+    python tv-alpaca.py
     ```
     This will start the Flask server on `http://0.0.0.0:5000`.
 
