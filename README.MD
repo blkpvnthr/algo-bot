@@ -62,3 +62,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Disclaimer
 This bot is for educational purposes only. Use at your own risk; trading involves substantial risk.
+# algo-bot
