@@ -1,0 +1,4 @@
+Flask==2.3.2
+websocket-client==1.5.1
+alpaca-trade-api==2.3.0
+
