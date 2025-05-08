@@ -1,65 +1,97 @@
 ![Welcome!](images/welcome.png)
 
 
-# Alpaca Trading Bot with WebSocket and Flask
+# 📡 algo-bot – Real-Time Trading Assistant
 
-This project implements a trading bot using Flask, the Alpaca API, and WebSockets to manage real-time market data and automate trades. The bot listens to trade, quote, and bar updates for specified symbols and executes market orders based on predefined criteria.
+A real-time trading assistant built with Flask and Python that connects to the Alpaca Markets API to execute live trades, respond to price movements, and receive TradingView alerts via webhooks.
 
-## Features
-- **Market Order Execution**: Place buy/sell market orders through Alpaca’s API.
-- **Real-time WebSocket Data**: Receive real-time trade, quote, and bar data for chosen symbols.
-- **Webhook for TradingView**: Integrates with TradingView alerts via a webhook endpoint that allows trades to be places automatically.
-- **Flask Interface**: Simple UI that allows you to place manual trades if needed.
+---
 
-## Requirements
-- **Python** 3.7+
-- **Flask**: `pip install flask`
-- **Alpaca API**: Requires an Alpaca account with API keys.
-- **websocket-client**: `pip install websocket-client`
+## 🚀 Features
 
-## Setup
+- 🔄 **Real-Time Data via WebSocket** (Alpaca IEX)
+- 🛒 **Market Order Execution** via Alpaca Trading API
+- 🧠 **Trade Triggers Based on Price Movement**
+- 📤 **Webhook Endpoint for TradingView Alerts**
+- 🧵 **Multithreaded WebSocket Handling**
+- 📋 **JSON-Formatted Order Logs for Easy Auditing**
 
-1. **Clone the Repository**:
-    ```bash
-    git clone https://github.com/your-username/your-repository.git
-    cd your-repository
-    ```
+---
 
-2. **Install Dependencies**:
-    ```bash
-    pip install -r requirements.txt
-    ```
+## 🧱 Tech Stack
 
-3. **Configure Alpaca API Keys**:
-   Replace `ALPACA_API_KEY` and `ALPACA_SECRET_KEY` with your Alpaca API credentials in the code.
+| Tool         | Purpose                             |
+|--------------|-------------------------------------|
+| Python       | Core programming language           |
+| Flask        | Web server and API routing          |
+| Alpaca API   | Trading and market data             |
+| WebSocketApp | Real-time data stream               |
+| HTML/Jinja2  | Frontend rendering (basic)          |
+| threading    | Concurrent WebSocket execution      |
 
-4. **Run the Application**:
-    ```bash
-    python tv-alpaca.py
-    ```
-    This will start the Flask server on `http://0.0.0.0:5000`.
+---
 
-## Usage
+## ⚙️ API & Webhook Endpoints
 
-- **/start**: Starts the WebSocket to receive real-time data updates.
-- **/trade**: Manually trigger a market order.
-- **/webhook**: Receives JSON data from TradingView alerts and triggers trades.
-- **/**: Main page with options to start WebSocket and place manual trades.
+### `POST /trade`
+Manually submit a trade order:
 
-## Code Structure
+```bash
+curl -X POST http://localhost:5000/trade -d "symbol=AAPL&qty=1&side=buy"
+```
 
-- `app.py`: Main application file. Handles Flask routes, WebSocket connection, and Alpaca API integration.
-- `templates/`: Contains HTML templates for the Flask interface.
+### `POST /webhook`
+Handle alerts from TradingView or external systems:
 
-## Functions
+```json
+{
+  "symbol": "AAPL",
+  "side": "buy",
+  "qty": 1
+}
+```
 
-- `place_market_order(symbol, qty, side)`: Submits a market order to Alpaca.
-- `on_message(ws, message)`: Handles WebSocket messages and processes trade, quote, and bar updates.
-- `on_open(ws)`: Authenticates and subscribes to symbols in the WebSocket connection.
+---
 
-## License
-This project is licensed under the MIT License - see the LICENSE file for details.
+## 🧪 Strategy Logic (Example)
+If `QBTS` price drops more than $0.05 compared to last recorded trade price → trigger a market **buy**.
 
-## Disclaimer
-This bot is for educational purposes only. Use at your own risk; trading involves substantial risk.
-# algo-bot
+---
+
+## 📂 Project Structure
+
+```
+algo-bot/
+├── app.py               # Flask + Alpaca integration
+├── templates/           # HTML templates (index, response, webhook)
+├── static/              # Optional for CSS/JS
+├── requirements.txt     # Dependencies
+```
+
+---
+
+## 🔒 Security Note
+Do **NOT** commit your Alpaca API credentials. Use environment variables or a secrets manager in production.
+
+---
+
+## 🎓 Educational Use
+This project was built by [Asmaa Abdul-Amin](https://asmaa.dev) as part of her Data Science B.S. program at UMGC. It demonstrates skills aligned with **Quant Developer** roles, including:
+
+- Real-time data ingestion
+- RESTful API integration
+- Conditional logic for trade execution
+- Logging and data serialization
+
+---
+
+## 🧠 Author
+
+**Asmaa Abdul-Amin**  
+🔗 [Portfolio](https://asmaa.dev)  
+🐙 [GitHub](https://github.com/blkpvnthr)  
+💼 [LinkedIn](https://linkedin.com/in/blkpvnthr)
+
+---
+
+> ⚠️ This project is for educational use only. It does not constitute financial advice or real trading recommendations.
