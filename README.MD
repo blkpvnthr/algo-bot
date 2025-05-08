@@ -76,7 +76,7 @@ Do **NOT** commit your Alpaca API credentials. Use environment variables or a se
 ---
 
 ## 🎓 Educational Use
-This project was built by [Asmaa Abdul-Amin](https://asmaa.dev) as part of her Data Science B.S. program at UMGC. It demonstrates skills aligned with **Quant Developer** roles, including:
+This project was built by [Asmaa Abdul-Amin](https://asmaa.dev). It demonstrates skills aligned with **Quant Developer** roles, including:
 
 - Real-time data ingestion
 - RESTful API integration
