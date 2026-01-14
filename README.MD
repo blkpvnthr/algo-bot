@@ -133,7 +133,4 @@ Do **NOT** commit your Alpaca API credentials. Use environment variables or a se
 
 This project was built by **[Asmaa Abdul-Amin](https://asmaa.dev)**.
 
-
----
-
 > ⚠️ This project is for educational use only. It does not constitute financial advice or real trading recommendations.
