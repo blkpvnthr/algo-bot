@@ -1,11 +1,11 @@
-![Welcome!](images/algobot2.png)
-
 
 # 📡 algo-bot
 
 A real-time trading assistant built with Flask and Python that connects to the Alpaca Markets API to execute live trades, respond to price movements, and receive TradingView alerts via webhooks.
 
 ---
+
+![Welcome!](images/algobot2.png)
 
 ## 🚀 Features
 
