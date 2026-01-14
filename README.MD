@@ -22,7 +22,7 @@ python app.py
 ```
 
 ### Open the App
-Open the browser and navigate to `http://localhost:5000`.
+Open the browser and navigate to `http://localhost:5002`.
 ```bash
 http://localhost:5002
 ```
