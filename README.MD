@@ -24,7 +24,7 @@ python app.py
 ### Open the App
 Open the browser and navigate to `http://localhost:5000`.
 ```bash
-[python app.py](http://localhost:5002)
+http://localhost:5002
 ```
 
 ### `Place a trade`
