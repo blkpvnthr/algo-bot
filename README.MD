@@ -10,7 +10,7 @@ A real-time trading assistant built with Flask and Python that connects to the A
 ## Usage
 
 ### Prerequisites
-Open a terminal create a new virtual environment then install dependencies.
+Open a terminal and create a new virtual environment then install dependencies.
 ```bash
 pip install -r requirements.txt
 ```
