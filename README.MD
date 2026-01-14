@@ -31,7 +31,7 @@ http://localhost:5002
 To execute a trade manually, send a POST request to the `/trade` endpoint with the following parameters:
 
 ```bash
-curl -X POST http://localhost:5000/trade -d "symbol=AAPL&qty=1&side=buy"
+curl -X POST http://localhost:5002/trade -d "symbol=AAPL&qty=1&side=buy"
 ```
 
 ---
