@@ -31,24 +31,25 @@ A real-time trading assistant built with Flask and Python that connects to the A
 
 ---
 
-## ⚙️ API & Webhook Endpoints
+## Usage
 
-### `POST /trade`
-Manually submit a trade order:
+### Prerequisites
+Open a terminal create a new virtual environment then install dependencies.
+```bash
+pip install -r requirements.txt
+```
+
+### ⚙️ To Get Started
+Run `tv-alpaca.py` to connect to realtime market data. Trade logic should be written within `tv-alpaca.py`.
+```bash
+python tv-alpaca.py
+```
+
+### `Place a trade`
+To execute a trade manually, send a POST request to the `/trade` endpoint with the following parameters:
 
 ```bash
 curl -X POST http://localhost:5000/trade -d "symbol=AAPL&qty=1&side=buy"
-```
-
-### `POST /webhook`
-Handle alerts from TradingView or external systems:
-
-```json
-{
-  "symbol": "AAPL",
-  "side": "buy",
-  "qty": 1
-}
 ```
 
 ---
@@ -62,7 +63,7 @@ If `QBTS` price drops more than $0.05 compared to last recorded trade price → 
 
 ```
 algo-bot/
-├── app.py               # Flask + Alpaca integration
+├── tv-alpaca.py         # Flask + Alpaca integration
 ├── templates/           # HTML templates (index, response, webhook)
 ├── static/              # Optional for CSS/JS
 ├── requirements.txt     # Dependencies
@@ -76,7 +77,7 @@ Do **NOT** commit your Alpaca API credentials. Use environment variables or a se
 ---
 
 ## 🎓 Educational Use
-This project was built by [Asmaa Abdul-Amin](https://asmaa.dev). It demonstrates skills aligned with **Quant Developer** roles, including:
+This project was built by [Asmaa Abdul-Amin](https://asmaa.dev). It demonstrates skills aligned with **Algorithmic Trading** roles, including:
 
 - Real-time data ingestion
 - RESTful API integration

@@ -1,54 +1,863 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trading Bot</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AlgoBot</title>
+  <link rel="icon" type="image/x-icon" href="../static/favicon.ico" />
+  <link rel="stylesheet" href="../static/styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+
 </head>
+<style>
+  body {
+    font-family: 'Roboto', sans-serif;
+  }:root{
+      --bg: #0b1220;
+      --panel: rgba(255,255,255,.06);
+      --panel2: rgba(255,255,255,.09);
+      --text: #e9eefb;
+      --muted: rgba(233,238,251,.72);
+      --line: rgba(255,255,255,.12);
+      --accent: #6ee7ff;
+      --good: #34d399;
+      --warn: #fbbf24;
+      --bad: #fb7185;
+      --shadow: 0 20px 60px rgba(0,0,0,.35);
+      --radius: 16px;
+    }
+    * { box-sizing: border-box; }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      color: var(--text);
+      background:
+        radial-gradient(900px 600px at 15% 10%, rgba(110,231,255,.20), transparent 55%),
+        radial-gradient(900px 600px at 85% 25%, rgba(167,139,250,.18), transparent 55%),
+        radial-gradient(900px 600px at 60% 90%, rgba(52,211,153,.14), transparent 55%),
+        var(--bg);
+      min-height: 100vh;
+    }
+
+    .wrap{
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 28px 18px 42px;
+    }
+
+    header{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:16px;
+      margin-bottom: 18px;
+    }
+
+    .brand{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    .brand h1{
+      margin:0;
+      font-size: 28px;
+      letter-spacing: .2px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+    .logo{
+      width: 36px;
+      height: 36px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(110,231,255,.9), rgba(167,139,250,.85));
+      box-shadow: 0 12px 30px rgba(110,231,255,.18);
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      font-weight: 800;
+      color:#04101c;
+    }
+    .subtitle{
+      margin:0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.35;
+    }
+
+    .status{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.04);
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow);
+      white-space: nowrap;
+    }
+    .dot{
+      width:10px;height:10px;border-radius:999px;
+      background: var(--warn);
+      box-shadow: 0 0 0 4px rgba(251,191,36,.18);
+    }
+    .status strong{ font-size: 13px; }
+    .status span{ color: var(--muted); font-size: 12px; }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 380px 1fr;
+      gap: 16px;
+      align-items:start;
+    }
+    @media (max-width: 900px){
+      .grid{ grid-template-columns: 1fr; }
+    }
+
+    .card{
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      backdrop-filter: blur(12px);
+    }
+    .card .hd{
+      padding: 14px 16px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,.07), transparent);
+    }
+    .card .hd h2{
+      margin:0;
+      font-size: 14px;
+      letter-spacing: .3px;
+      color: rgba(233,238,251,.92);
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .pill{
+      font-size: 12px;
+      color: rgba(233,238,251,.8);
+      border: 1px solid var(--line);
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.04);
+    }
+    .card .bd{ padding: 16px; }
+
+    .row{ display:flex; gap:10px; }
+    .row > * { flex: 1; }
+
+    label{
+      display:block;
+      font-size: 12px;
+      color: rgba(233,238,251,.76);
+      margin: 0 0 6px 2px;
+    }
+
+    input, select{
+      width:100%;
+      padding: 11px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(10,16,30,.55);
+      color: var(--text);
+      outline: none;
+      transition: .15s ease;
+    }
+    input::placeholder{ color: rgba(233,238,251,.45); }
+    input:focus, select:focus{
+      border-color: rgba(110,231,255,.55);
+      box-shadow: 0 0 0 4px rgba(110,231,255,.12);
+    }
+
+    .btnbar{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top: 12px;
+    }
+    button{
+      cursor:pointer;
+      border: 1px solid rgba(255,255,255,.16);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      padding: 11px 12px;
+      border-radius: 14px;
+      font-weight: 650;
+      letter-spacing:.2px;
+      transition: .15s ease;
+    }
+    button:hover{ transform: translateY(-1px); background: rgba(255,255,255,.09); }
+    button:active{ transform: translateY(0px); }
+    .primary{
+      border-color: rgba(110,231,255,.45);
+      background: linear-gradient(135deg, rgba(110,231,255,.18), rgba(167,139,250,.12));
+    }
+    .danger{
+      border-color: rgba(251,113,133,.45);
+      background: rgba(251,113,133,.10);
+    }
+    .mutedbtn{
+      opacity:.9;
+    }
+
+    .hint{
+      margin-top: 10px;
+      color: rgba(233,238,251,.62);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+    .hint code{
+      padding: 2px 6px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+    }
+
+    /* Feed */
+    .feed{
+      height: 520px;
+      overflow:auto;
+      padding: 12px;
+      background: rgba(10,16,30,.35);
+    }
+    .feed::-webkit-scrollbar{ width: 10px; }
+    .feed::-webkit-scrollbar-thumb{
+      background: rgba(255,255,255,.16);
+      border-radius: 999px;
+      border: 2px solid rgba(0,0,0,0);
+      background-clip: padding-box;
+    }
+    .evt{
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.05);
+      border-radius: 14px;
+      padding: 10px 12px;
+      margin-bottom: 10px;
+    }
+    .evt .meta{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom: 6px;
+      color: rgba(233,238,251,.70);
+      font-size: 12px;
+    }
+    .tag{
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color: rgba(233,238,251,.82);
+    }
+    pre{
+      margin:0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-size: 12px;
+      line-height: 1.35;
+      color: rgba(233,238,251,.92);
+    }
+
+    .footbar{
+      display:flex;
+      gap:10px;
+      justify-content:space-between;
+      align-items:center;
+      padding: 12px 16px;
+      border-top: 1px solid var(--line);
+      background: linear-gradient(180deg, transparent, rgba(255,255,255,.05));
+    }
+    .footbar small{ color: rgba(233,238,251,.55); }
+
+    /* --- Top charts row --- */
+.charts{
+  display:grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin: 0 0 16px;
+}
+@media (max-width: 900px){
+  .charts{ grid-template-columns: 1fr; }
+}
+.chartBox{
+  height: 260px; /* adjust as you like */
+}
+.chartBox iframe{
+  width:100%;
+  height:100%;
+  border:0;
+}
+
+/* --- Chart Carousel --- */
+.carousel.card { overflow: hidden; }
+
+.carousel .bd{
+  padding: 0;
+}
+
+.carouselViewport{
+  position: relative;
+  overflow: hidden;
+}
+
+.carouselTrack{
+  display: flex;
+  width: 100%;
+  transition: transform .35s ease;
+}
+
+.slide{
+  min-width: 100%;
+  padding: 16px;
+}
+
+.slideInner{
+  height: 320px; /* adjust */
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(10,16,30,.35);
+}
+
+.slideInner iframe{
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.carouselControls{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+
+.iconBtn{
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  font-weight: 800;
+  user-select: none;
+}
+
+.dots{
+  display:flex;
+  gap:8px;
+  align-items:center;
+  padding: 0 8px;
+}
+
+.dotBtn{
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.25);
+  background: rgba(255,255,255,.10);
+  cursor:pointer;
+  padding: 0;
+}
+.dotBtn.active{
+  background: rgba(110,231,255,.75);
+  border-color: rgba(110,231,255,.9);
+  box-shadow: 0 0 0 4px rgba(110,231,255,.12);
+}
+.kbdHint{
+  color: rgba(233,238,251,.55);
+  font-size: 12px;
+}
+/* ===== Glass Navbar ===== */
+.navbar{
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  border-bottom: 1px solid var(--line);
+  background: rgba(10,16,30,.45);
+  backdrop-filter: blur(14px);
+}
+
+.navbar .navwrap{
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 12px 18px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 14px;
+}
+
+.navLeft{
+  display:flex;
+  align-items:center;
+  gap: 12px;
+  min-width: 220px;
+}
+
+.navTitle{
+  display:flex;
+  flex-direction:column;
+  line-height:1.1;
+}
+.navTitle strong{
+  font-size: 14px;
+  letter-spacing:.2px;
+}
+.navTitle span{
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.navLinks{
+  display:flex;
+  align-items:center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content:center;
+}
+
+.navLinks a{
+  text-decoration:none;
+  color: rgba(233,238,251,.86);
+  font-size: 13px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  transition: .15s ease;
+}
+.navLinks a:hover{
+  border-color: rgba(255,255,255,.14);
+  background: rgba(255,255,255,.06);
+  transform: translateY(-1px);
+}
+
+.navRight{
+  display:flex;
+  align-items:center;
+  gap: 10px;
+  justify-content:flex-end;
+  min-width: 220px;
+}
+
+.navSearch{
+  width: 220px;
+  max-width: 40vw;
+}
+
+@media (max-width: 900px){
+  .navLeft, .navRight{ min-width: auto; }
+  .navSearch{ width: 160px; }
+}
+
+</style>
+
 <body>
-    <h1>Welcome to the Trading Bot API!</h1>
-    <form action="/start" method="post">
-        <button type="submit">Start WebSocket</button>
-    </form>
-    <form action="/trade" method="post">
-        <input type="text" name="symbol" placeholder="Symbol" required>
-        <input type="number" name="qty" placeholder="Quantity" required>
-        <select name="side">
-            <option value="buy">Buy</option>
-            <option value="sell">Sell</option>
-        </select>
-        <button type="submit">Execute Trade</button>
-    </form>
-    <div id="websocket-data"></div>
+  {% include "navbar.html" %}
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <h1><span class="logo">⚡</span>Welcome!</h1>
+        <p class="subtitle">
+          Control panel for your trading endpoints and live market stream output.
+          (Tip: keep API keys on the server—never in the browser.)
+        </p>
+      </div>
 
-    <script>
-        const ws = new WebSocket('wss://stream.data.alpaca.markets/v2/iex');
+      <div class="status" title="WebSocket status">
+        <span class="dot" id="ws-dot"></span>
+        <div style="display:flex; flex-direction:column; line-height:1.1;">
+          <strong id="ws-state">Connecting…</strong>
+          <span id="ws-detail">Initializing stream</span>
+        </div>
+      </div>
+    </header>
+<!-- Top: Chart Carousel -->
+<section class="card carousel" aria-label="Market charts carousel">
+  <div class="hd">
+    <h2>📊 Market Charts</h2>
+    <div class="carouselControls">
+      <button class="iconBtn" type="button" id="chartPrev" aria-label="Previous chart">‹</button>
+      <div class="dots" id="chartDots" aria-label="Chart navigation dots"></div>
+      <button class="iconBtn" type="button" id="chartNext" aria-label="Next chart">›</button>
+      <span class="pill" id="chartLabel">Loading…</span>
+    </div>
+  </div>
 
-        ws.onopen = function() {
-            console.log('WebSocket connection opened');
-            const authData = {
-                action: "auth",
-                key: "PKOPOB9GVBN5KKLGX026",
-                secret: "TvFzptVU4xcNPFCo9f9YYSg3ritPQQ6RNAl0uunT"
-            };
-            ws.send(JSON.stringify(authData));
+  <div class="bd">
+    <div class="carouselViewport">
+      <div class="carouselTrack" id="chartTrack">
+        <!-- slides injected by JS -->
+      </div>
+    </div>
+  </div>
 
-            const subscribeMessage = {
-                action: "subscribe",
-                trades: ["QBTS"],
-                quotes: ["QBTS"],
-                bars: ["QBTS"]
-            };
-            ws.send(JSON.stringify(subscribeMessage));
-        };
+  <div class="footbar">
+    <small class="kbdHint">Use ← → keys • Auto-advance optional</small>
+    <small id="chartCount">0 / 0</small>
+  </div>
+</section>
 
-        ws.onmessage = function(event) {
-            const data = JSON.parse(event.data);
-            console.log('WebSocket message received:', data);
+    <div class="grid">
+      <!-- Left: Controls -->
+      <section class="card">
+        <div class="hd">
+          <h2>⚙️ Controls</h2>
+          <span class="pill">Flask API</span>
+        </div>
+        <div class="bd">
 
-            const div = document.getElementById('websocket-data');
-            div.innerHTML += '<pre>' + JSON.stringify(data, null, 4) + '</pre>';
-        };
-    </script>
+          <form action="/start" method="post" style="margin-bottom:14px;">
+            <button class="primary" type="submit">Start WebSocket</button>
+            <span class="hint" style="display:block; margin-top:8px;">
+              Calls <code>POST /start</code> on your server.
+            </span>
+          </form>
+
+          <form action="/trade" method="post" id="trade-form">
+            <div class="row">
+              <div>
+                <label for="symbol">Symbol</label>
+                <input id="symbol" type="text" name="symbol" placeholder="e.g., QBTS" required />
+              </div>
+              <div>
+                <label for="qty">Quantity</label>
+                <input id="qty" type="number" name="qty" min="1" step="1" placeholder="e.g., 10" required />
+              </div>
+            </div>
+
+            <div class="row" style="margin-top:10px;">
+              <div>
+                <label for="side">Side</label>
+                <select id="side" name="side">
+                  <option value="buy">Buy</option>
+                  <option value="sell">Sell</option>
+                </select>
+              </div>
+              <div>
+                <label for="watch">Watch symbol (stream)</label>
+                <input id="watch" type="text" placeholder="QBTS" value="QBTS" />
+              </div>
+            </div>
+
+            <div class="btnbar">
+              <button class="primary" type="submit">Execute Trade</button>
+              <button class="mutedbtn" type="button" id="clear-feed">Clear Feed</button>
+              <button class="danger" type="button" id="pause-feed">Pause</button>
+            </div>
+
+            <div class="hint">
+              Trade calls <code>POST /trade</code>. Stream watchlist updates client-side only in this demo UI.
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- Right: Stream feed -->
+      <section class="card">
+        <div class="hd">
+          <h2>📡 Live Stream</h2>
+          <span class="pill" id="watch-pill">Watching: QBTS</span>
+        </div>
+
+        <div class="feed" id="websocket-data" aria-live="polite"></div>
+
+        <div class="footbar">
+          <small id="feed-count">0 events</small>
+          <small>Newest at top • Auto-scroll</small>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    // --------- IMPORTANT SECURITY NOTE ----------
+    // Do NOT put Alpaca API key/secret in browser JS.
+    // Authenticate/subscribe server-side and proxy to the client, OR use a safe token mechanism.
+    // -------------------------------------------
+
+    // Demo: direct WS connection WITHOUT auth (will not work for private feeds).
+    // Replace with your server-proxied websocket endpoint, e.g. ws://localhost:8000/stream
+    const WS_URL = 'wss://stream.data.alpaca.markets/v2/iex';
+
+    const feed = document.getElementById('websocket-data');
+    const wsDot = document.getElementById('ws-dot');
+    const wsState = document.getElementById('ws-state');
+    const wsDetail = document.getElementById('ws-detail');
+    const watchInput = document.getElementById('watch');
+    const watchPill = document.getElementById('watch-pill');
+    const clearBtn = document.getElementById('clear-feed');
+    const pauseBtn = document.getElementById('pause-feed');
+    const feedCount = document.getElementById('feed-count');
+
+    let paused = false;
+    let count = 0;
+
+    function setStatus(state, detail, color) {
+      wsState.textContent = state;
+      wsDetail.textContent = detail;
+      wsDot.style.background = color;
+      wsDot.style.boxShadow = `0 0 0 4px ${color}30`;
+    }
+
+    function addEvent(tag, payload) {
+      if (paused) return;
+
+      const evt = document.createElement('div');
+      evt.className = 'evt';
+
+      const meta = document.createElement('div');
+      meta.className = 'meta';
+
+      const left = document.createElement('div');
+      left.innerHTML = `<span class="tag">${tag}</span> <span style="margin-left:8px;">${new Date().toLocaleTimeString()}</span>`;
+
+      const right = document.createElement('div');
+      right.textContent = typeof payload === 'string' ? '' : '';
+
+      meta.appendChild(left);
+      meta.appendChild(right);
+
+      const pre = document.createElement('pre');
+      pre.textContent = typeof payload === 'string' ? payload : JSON.stringify(payload, null, 2);
+
+      evt.appendChild(meta);
+      evt.appendChild(pre);
+
+      // Newest on top
+      feed.prepend(evt);
+
+      count += 1;
+      feedCount.textContent = `${count} event${count === 1 ? '' : 's'}`;
+    }
+
+    clearBtn.addEventListener('click', () => {
+      feed.innerHTML = '';
+      count = 0;
+      feedCount.textContent = '0 events';
+    });
+
+    pauseBtn.addEventListener('click', () => {
+      paused = !paused;
+      pauseBtn.textContent = paused ? 'Resume' : 'Pause';
+      pauseBtn.classList.toggle('danger', !paused);
+      pauseBtn.classList.toggle('mutedbtn', paused);
+    });
+
+    watchInput.addEventListener('input', () => {
+      const v = (watchInput.value || '').trim().toUpperCase() || 'QBTS';
+      watchPill.textContent = `Watching: ${v}`;
+    });
+
+    // Connect WebSocket
+    let ws;
+    try {
+      ws = new WebSocket(WS_URL);
+      setStatus('Connecting…', 'Opening socket', '#fbbf24');
+
+      ws.onopen = () => {
+        setStatus('Connected', 'Socket open (auth not included)', '#34d399');
+        addEvent('ws', { message: 'WebSocket connection opened' });
+
+        // If you proxy from your server, you would send a subscribe message here.
+        // For example (server-proxied, no secrets in browser):
+        // ws.send(JSON.stringify({ action: "subscribe", trades: [symbol], quotes: [symbol], bars: [symbol] }));
+      };
+
+      ws.onmessage = (event) => {
+        let data;
+        try { data = JSON.parse(event.data); }
+        catch { data = event.data; }
+        addEvent('stream', data);
+      };
+
+      ws.onerror = () => {
+        setStatus('Error', 'WebSocket error', '#fb7185');
+        addEvent('error', 'WebSocket encountered an error (check console/server proxy).');
+      };
+
+      ws.onclose = (e) => {
+        setStatus('Disconnected', `Closed (code ${e.code})`, '#fb7185');
+        addEvent('close', { code: e.code, reason: e.reason || 'no reason provided' });
+      };
+    } catch (err) {
+      setStatus('Error', 'Failed to create WebSocket', '#fb7185');
+      addEvent('error', String(err));
+    }
+    // ---------- Chart Carousel (TradingView embeds) ----------
+const chartTrack = document.getElementById('chartTrack');
+const chartDots = document.getElementById('chartDots');
+const chartPrev = document.getElementById('chartPrev');
+const chartNext = document.getElementById('chartNext');
+const chartLabel = document.getElementById('chartLabel');
+const chartCount = document.getElementById('chartCount');
+
+const charts = [
+  { name: 'SPY', symbol: 'AMEX:SPY' },
+  { name: 'VIX', symbol: 'VIX' },
+  { name: 'NDX', symbol: 'NASDAQ:NDX' },
+  { name: 'DJI', symbol: 'DJI' },
+  { name: 'TSLA', symbol: 'TSLA' },
+  { name: 'SQQQ', symbol: 'SQQQ' },
+  { name: 'TQQQ', symbol: 'TQQQ' },
+  { name: 'QBTS', symbol: 'QBTS' },
+  { name: 'OPEN', symbol: 'OPEN' },
+  { name: 'CHAT', symbol: 'CHAT' },
+  { name: 'VOO', symbol: 'VOO' },
+  { name: 'VGT', symbol: 'VGT' },
+  { name: 'ASTS', symbol: 'ASTS' },
+  { name: 'RGTI', symbol: 'RGTI' },
+  { name: 'DIA', symbol: 'DIA' },
+  { name: 'IONQ', symbol: 'IONQ' },
+  { name: 'APLD', symbol: 'APLD' },
+  { name: 'NVDA', symbol: 'NVDA' },
+  { name: 'QTUM', symbol: 'QTUM' },
+  { name: 'NANC', symbol: 'NANC' },
+  { name: 'MAGS', symbol: 'MAGS' },
+  { name: 'MIND', symbol: 'MIND' },
+  { name: 'PAYS', symbol: 'PAYS' },
+  { name: 'UAVS', symbol: 'UAVS' },
+  { name: 'MGIC', symbol: 'MGIC' },
+  { name: 'BNZI', symbol: 'BNZI' },
+  
+];
+
+function tvSrc(symbol){
+  const params = new URLSearchParams({
+    frameElementId: 'tv_' + symbol.replace(/[^a-zA-Z0-9]/g,'_'),
+    symbol: symbol,
+    interval: '5',
+    hidesidetoolbar: '1',
+    symboledit: '0',
+    saveimage: '0',
+    toolbarbg: '#0b1220',
+    studies: '[]',
+    theme: 'dark',
+    style: '1',
+    timezone: 'Etc/UTC',
+    withdateranges: '1',
+    hidevolume: '0',
+    hidelegend: '0',
+    enable_publishing: '0'
+  });
+  return `https://s.tradingview.com/widgetembed/?${params.toString()}`;
+}
+
+let chartIndex = 0;
+
+function renderCarousel(){
+  chartTrack.innerHTML = '';
+  chartDots.innerHTML = '';
+
+  charts.forEach((c, i) => {
+    // slide
+    const slide = document.createElement('div');
+    slide.className = 'slide';
+    slide.setAttribute('role', 'group');
+    slide.setAttribute('aria-label', `${i+1} of ${charts.length}: ${c.name}`);
+
+    const inner = document.createElement('div');
+    inner.className = 'slideInner';
+
+    const iframe = document.createElement('iframe');
+    iframe.loading = 'lazy';
+    iframe.title = `${c.name} chart`;
+    iframe.allowFullscreen = true;
+    iframe.src = tvSrc(c.symbol);
+
+    inner.appendChild(iframe);
+    slide.appendChild(inner);
+    chartTrack.appendChild(slide);
+
+    // dot
+    const dot = document.createElement('button');
+    dot.className = 'dotBtn';
+    dot.type = 'button';
+    dot.setAttribute('aria-label', `Go to ${c.name}`);
+    dot.addEventListener('click', () => goTo(i));
+    chartDots.appendChild(dot);
+  });
+
+  updateCarousel();
+}
+
+function updateCarousel(){
+  chartTrack.style.transform = `translateX(-${chartIndex * 100}%)`;
+
+  [...chartDots.children].forEach((d, i) => {
+    d.classList.toggle('active', i === chartIndex);
+  });
+
+  chartLabel.textContent = `${charts[chartIndex].name} • ${charts[chartIndex].symbol}`;
+  chartCount.textContent = `${chartIndex + 1} / ${charts.length}`;
+}
+
+function goTo(i){
+  chartIndex = (i + charts.length) % charts.length;
+  updateCarousel();
+}
+
+chartPrev.addEventListener('click', () => goTo(chartIndex - 1));
+chartNext.addEventListener('click', () => goTo(chartIndex + 1));
+
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowLeft') goTo(chartIndex - 1);
+  if (e.key === 'ArrowRight') goTo(chartIndex + 1);
+});
+
+// init
+renderCarousel();
+
+  </script>
+  <script>// ---------- Navbar clock + feed filter + footer ----------
+const navClock = document.getElementById('nav-clock');
+const navSearch = document.getElementById('nav-search');
+const footerYear = document.getElementById('footer-year');
+const footerTime = document.getElementById('footer-time');
+const footerTop = document.getElementById('footer-top');
+
+function tickClock(){
+  const now = new Date();
+  const t = now.toLocaleTimeString();
+  if (navClock) navClock.textContent = t;
+  if (footerTime) footerTime.textContent = t;
+}
+setInterval(tickClock, 1000);
+tickClock();
+
+if (footerYear) footerYear.textContent = String(new Date().getFullYear());
+
+if (footerTop){
+  footerTop.addEventListener('click', (e) => {
+    e.preventDefault();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+}
+
+// Optional: filter visible feed events by text
+if (navSearch && feed){
+  navSearch.addEventListener('input', () => {
+    const q = (navSearch.value || '').trim().toLowerCase();
+    const items = feed.querySelectorAll('.evt');
+    items.forEach(evt => {
+      const txt = (evt.textContent || '').toLowerCase();
+      evt.style.display = (!q || txt.includes(q)) ? '' : 'none';
+    });
+  });
+}
+</script>
+{% include "footer.html" %}
 </body>
+
+
 </html>
