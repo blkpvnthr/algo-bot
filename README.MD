@@ -21,6 +21,12 @@ Run `app.py` to connect to realtime market data.
 python app.py
 ```
 
+### Open the App
+Open the browser and navigate to `http://localhost:5000`.
+```bash
+[python app.py](http://localhost:5002)
+```
+
 ### `Place a trade`
 To execute a trade manually, send a POST request to the `/trade` endpoint with the following parameters:
 
