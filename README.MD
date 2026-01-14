@@ -75,10 +75,7 @@ Do **NOT** commit your Alpaca API credentials. Use environment variables or a se
 
 ## 🧠 Author
 
-This project was built by **[Asmaa Abdul-Amin](https://asmaa.dev)**. 
-🔗 [Portfolio](https://asmaa.dev)  
-🐙 [GitHub](https://github.com/blkpvnthr)  
-💼 [LinkedIn](https://linkedin.com/in/blkpvnthr)
+This project was built by **[Asmaa Abdul-Amin](https://asmaa.dev)**.
 
 
 ---
