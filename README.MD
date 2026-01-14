@@ -30,10 +30,6 @@ curl -X POST http://localhost:5000/trade -d "symbol=AAPL&qty=1&side=buy"
 
 ---
 
-## 🧪 Strategy Logic (Example)
-If `QBTS` price drops more than $0.05 compared to last recorded trade price → trigger a market **buy**.
-
----
 ## 🚀 Features
 
 - 🔄 **Real-Time Data via WebSocket** (Alpaca IEX)
@@ -56,6 +52,7 @@ If `QBTS` price drops more than $0.05 compared to last recorded trade price → 
 | HTML/Jinja2  | Frontend rendering (basic)          |
 | threading    | Concurrent WebSocket execution      |
 
+
 ---
 
 ## 📂 Project Structure
@@ -73,24 +70,16 @@ algo-bot/
 ## 🔒 Security Note
 Do **NOT** commit your Alpaca API credentials. Use environment variables or a secrets manager in production.
 
----
-
-## 🎓 Educational Use
-This project was built by [Asmaa Abdul-Amin](https://asmaa.dev). It demonstrates skills aligned with **Algorithmic Trading** roles, including:
-
-- Real-time data ingestion
-- RESTful API integration
-- Conditional logic for trade execution
-- Logging and data serialization
 
 ---
 
 ## 🧠 Author
 
-**Asmaa Abdul-Amin**  
+This project was built by **[Asmaa Abdul-Amin](https://asmaa.dev)**. 
 🔗 [Portfolio](https://asmaa.dev)  
 🐙 [GitHub](https://github.com/blkpvnthr)  
 💼 [LinkedIn](https://linkedin.com/in/blkpvnthr)
+
 
 ---
 
