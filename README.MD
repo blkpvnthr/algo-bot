@@ -7,30 +7,6 @@ A real-time trading assistant built with Flask and Python that connects to the A
 
 ![Welcome!](images/algobot2.png)
 
-## 🚀 Features
-
-- 🔄 **Real-Time Data via WebSocket** (Alpaca IEX)
-- 🛒 **Market Order Execution** via Alpaca Trading API
-- 🧠 **Trade Triggers Based on Price Movement**
-- 📤 **Webhook Endpoint for TradingView Alerts**
-- 🧵 **Multithreaded WebSocket Handling**
-- 📋 **JSON-Formatted Order Logs for Easy Auditing**
-
----
-
-## 🧱 Tech Stack
-
-| Tool         | Purpose                             |
-|--------------|-------------------------------------|
-| Python       | Core programming language           |
-| Flask        | Web server and API routing          |
-| Alpaca API   | Trading and market data             |
-| WebSocketApp | Real-time data stream               |
-| HTML/Jinja2  | Frontend rendering (basic)          |
-| threading    | Concurrent WebSocket execution      |
-
----
-
 ## Usage
 
 ### Prerequisites
@@ -56,6 +32,29 @@ curl -X POST http://localhost:5000/trade -d "symbol=AAPL&qty=1&side=buy"
 
 ## 🧪 Strategy Logic (Example)
 If `QBTS` price drops more than $0.05 compared to last recorded trade price → trigger a market **buy**.
+
+---
+## 🚀 Features
+
+- 🔄 **Real-Time Data via WebSocket** (Alpaca IEX)
+- 🛒 **Market Order Execution** via Alpaca Trading API
+- 🧠 **Trade Triggers Based on Price Movement**
+- 📤 **Webhook Endpoint for TradingView Alerts**
+- 🧵 **Multithreaded WebSocket Handling**
+- 📋 **JSON-Formatted Order Logs for Easy Auditing**
+
+---
+
+## 🧱 Tech Stack
+
+| Tool         | Purpose                             |
+|--------------|-------------------------------------|
+| Python       | Core programming language           |
+| Flask        | Web server and API routing          |
+| Alpaca API   | Trading and market data             |
+| WebSocketApp | Real-time data stream               |
+| HTML/Jinja2  | Frontend rendering (basic)          |
+| threading    | Concurrent WebSocket execution      |
 
 ---
 
