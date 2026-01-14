@@ -1,0 +1,884 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Scripts</title>
+
+  <style>
+    :root{
+      --bg:#05060a;
+      --panel:rgba(255,255,255,.06);
+      --line:rgba(255,255,255,.10);
+      --text:#eef0ff;
+      --muted:rgba(238,240,255,.70);
+      --shadow: 0 18px 60px rgba(0,0,0,.45);
+      --radius:18px;
+      --accent: rgba(34,211,238,.9);
+      --accent2: rgba(99,102,241,.9);
+      --good: rgba(16,185,129,.95);
+      --warn: rgba(245,158,11,.95);
+      --danger: rgba(239,68,68,.95);
+    }
+
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      color:var(--text);
+      background:
+        radial-gradient(1200px 700px at 15% -10%, rgba(99,102,241,.25), transparent 60%),
+        radial-gradient(900px 600px at 85% 0%, rgba(34,211,238,.18), transparent 55%),
+        radial-gradient(800px 700px at 40% 110%, rgba(244,63,94,.12), transparent 60%),
+        var(--bg);
+      min-height:100vh;
+    }
+
+    /* ===== Page Layout ===== */
+    .page{
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 18px 16px 28px;
+    }
+
+    .headerRow{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+      margin: 8px 0 14px;
+    }
+
+    .crumbs{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      color: rgba(238,240,255,.80);
+      font-size: 13px;
+      flex-wrap: wrap;
+    }
+    .crumbs a{
+      color: rgba(233,238,251,.86);
+      text-decoration:none;
+      border-bottom: 1px dashed rgba(255,255,255,.16);
+    }
+    .crumbs a:hover{ border-bottom-color: rgba(255,255,255,.35); }
+    .crumbs .sep{ opacity:.45; }
+
+    .actions{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn{
+      cursor:pointer;
+      border: 1px solid rgba(255,255,255,.16);
+      background: rgba(0,0,0,.18);
+      color: var(--text);
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-weight: 800;
+      letter-spacing:.2px;
+      transition: .15s ease;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.25);
+      user-select:none;
+    }
+    .btn:hover{ transform: translateY(-1px); background: rgba(255,255,255,.07); }
+    .btn.primary{
+      border-color: rgba(34,211,238,.35);
+      background: linear-gradient(135deg, rgba(34,211,238,.16), rgba(99,102,241,.10));
+    }
+    .btn.good{
+      border-color: rgba(16,185,129,.35);
+      background: linear-gradient(135deg, rgba(16,185,129,.18), rgba(34,211,238,.06));
+    }
+
+    .layout{
+      display:grid;
+      grid-template-columns: 1.35fr .85fr;
+      gap: 14px;
+      align-items: start;
+    }
+
+    @media (max-width: 1100px){
+      .layout{ grid-template-columns: 1fr; }
+    }
+
+    /* ===== Panels ===== */
+    .panel{
+      border: 1px solid var(--line);
+      background: linear-gradient(135deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      position:relative;
+    }
+
+    .panel::before{
+      content:"";
+      position:absolute;
+      inset:-220px -260px auto auto;
+      width: 520px;
+      height: 520px;
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.10), transparent 55%);
+      transform: rotate(12deg);
+      pointer-events:none;
+      opacity:.60;
+    }
+
+    .panelHead{
+      position:relative;
+      z-index:1;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(0,0,0,.18);
+    }
+
+    .panelTitle{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .dotLamp{
+      width: 10px;
+      height: 10px;
+      border-radius: 99px;
+      background: rgba(255,255,255,.28);
+      box-shadow: 0 0 0 4px rgba(255,255,255,.06);
+    }
+
+    .panelTitle strong{
+      font-size: 14px;
+      letter-spacing:.2px;
+    }
+
+    .smallMeta{
+      font-size: 12px;
+      color: rgba(238,240,255,.70);
+      white-space: nowrap;
+    }
+
+    /* ===== Editor ===== */
+    .editorWrap{
+      position:relative;
+      z-index:1;
+      padding: 0;
+    }
+
+    .editor{
+      width: 100%;
+      min-height: 72vh;
+      padding: 14px 14px 18px;
+      background: rgba(0,0,0,.25);
+      color: rgba(238,240,255,.92);
+      border: none;
+      outline: none;
+      resize: none;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 13px;
+      line-height: 1.5;
+      tab-size: 2;
+    }
+
+    .editorFoot{
+      position:relative;
+      z-index:1;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+      padding: 10px 12px;
+      border-top: 1px solid var(--line);
+      background: rgba(0,0,0,.18);
+      font-size: 12px;
+      color: rgba(238,240,255,.70);
+    }
+
+    .pill{
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.20);
+      padding: 6px 10px;
+      border-radius: 999px;
+      color: rgba(238,240,255,.86);
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      white-space: nowrap;
+    }
+
+    /* ===== Right Tabs ===== */
+    .tabs{
+      display:flex;
+      gap: 8px;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(0,0,0,.18);
+      position:relative;
+      z-index:1;
+    }
+
+    .tab{
+      cursor:pointer;
+      font-size: 13px;
+      padding: 8px 10px;
+      border-radius: 12px;
+      border: 1px solid transparent;
+      color: rgba(233,238,251,.86);
+      background: rgba(255,255,255,.00);
+      transition: .15s ease;
+      user-select:none;
+      font-weight: 800;
+    }
+    .tab:hover{
+      border-color: rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      transform: translateY(-1px);
+    }
+    .tab.active{
+      border-color: rgba(34,211,238,.35);
+      background: linear-gradient(135deg, rgba(34,211,238,.12), rgba(99,102,241,.08));
+      color: rgba(255,255,255,.95);
+    }
+
+    .tabBody{
+      position:relative;
+      z-index:1;
+      padding: 12px;
+    }
+
+    .row{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    @media (max-width: 1100px){
+      .row{ grid-template-columns: 1fr; }
+    }
+
+    label{
+      display:block;
+      font-size: 12px;
+      color: rgba(238,240,255,.70);
+      margin-bottom: 6px;
+      font-weight: 800;
+      letter-spacing:.2px;
+    }
+
+    .input, select{
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,.22);
+      color: var(--text);
+      outline:none;
+    }
+    .input:focus, select:focus{
+      border-color: rgba(255,255,255,.22);
+      box-shadow: 0 0 0 4px rgba(99,102,241,.14);
+    }
+
+    .runRow{
+      display:flex;
+      align-items:flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn.run{
+      border-color: rgba(99,102,241,.35);
+      background: linear-gradient(135deg, rgba(99,102,241,.18), rgba(34,211,238,.06));
+      padding: 10px 16px;
+    }
+
+    .helper{
+      font-size: 12px;
+      color: rgba(238,240,255,.65);
+      line-height: 1.45;
+    }
+
+    /* ===== Output ===== */
+    .output{
+      border-top: 1px solid var(--line);
+      background: rgba(0,0,0,.24);
+      padding: 10px 12px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 12px;
+      color: rgba(238,240,255,.88);
+      white-space: pre-wrap;
+      min-height: 140px;
+    }
+
+    .muted{ color: rgba(238,240,255,.70); }
+    .k{ color: rgba(34,211,238,.95); font-weight: 900; }
+
+      /* ===== Glass Navbar ===== */
+.navbar{
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  border-bottom: 1px solid var(--line);
+  background: rgba(10,16,30,.45);
+  backdrop-filter: blur(14px);
+}
+
+.navbar .navwrap{
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 12px 18px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 14px;
+}
+
+.navLeft{
+  display:flex;
+  align-items:center;
+  gap: 12px;
+  min-width: 220px;
+}
+
+.navTitle{
+  display:flex;
+  flex-direction:column;
+  line-height:1.1;
+}
+.navTitle strong{
+  font-size: 14px;
+  letter-spacing:.2px;
+}
+.navTitle span{
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.navLinks{
+  display:flex;
+  align-items:center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content:center;
+}
+
+.navLinks a{
+  text-decoration:none;
+  color: rgba(233,238,251,.86);
+  font-size: 13px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  transition: .15s ease;
+}
+.navLinks a:hover{
+  border-color: rgba(255,255,255,.14);
+  background: rgba(255,255,255,.06);
+  transform: translateY(-1px);
+}
+
+.navRight{
+  display:flex;
+  align-items:center;
+  gap: 10px;
+  justify-content:flex-end;
+  min-width: 220px;
+}
+
+.navSearch{
+  width: 220px;
+  max-width: 40vw;
+}
+
+@media (max-width: 900px){
+  .navLeft, .navRight{ min-width: auto; }
+  .navSearch{ width: 160px; }
+}
+
+async function runNow(){
+  const payload = getQuickRunPayload();
+  out.textContent = "Running…";
+
+  try{
+    const res = await fetch("/api/runs", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    const ct = (res.headers.get("content-type") || "").toLowerCase();
+    const raw = await res.text();
+
+    // If backend returned HTML, show it plainly (this is your current error)
+    if (!ct.includes("application/json")) {
+      out.textContent = `Run error: non-JSON response (HTTP ${res.status})\n\n` + raw.slice(0, 2000);
+      return;
+    }
+
+    const data = JSON.parse(raw);
+
+    if (!res.ok){
+      out.textContent = "Run failed:\n" + JSON.stringify(data, null, 2);
+      return;
+    }
+
+    out.textContent =
+      `status=${data.status} exit_code=${data.exit_code}\n\n` +
+      `--- stdout ---\n${data.stdout || ""}\n\n` +
+      `--- stderr ---\n${data.stderr || ""}\n\n` +
+      `--- artifacts ---\n${(data.artifacts || []).map(a => a.name).join("\\n")}`;
+  }catch(e){
+    out.textContent = "Run error:\n" + (e?.message || String(e));
+  }
+}
+
+  </style>
+</head>
+
+<body>
+  {% include "navbar.html" %}
+
+  <div class="page">
+    <div class="headerRow">
+      <div class="crumbs" aria-label="Breadcrumbs">
+        <a href="/">Dashboard</a>
+        <span class="sep">›</span>
+        <span class="k">Scripts</span>
+      </div>
+
+      <div class="actions">
+        <a class="btn" href="#" id="btnSave">Save Strategy</a>
+        <a class="btn good" href="#" id="btnLive">Go Live</a>
+      </div>
+    </div>
+
+    <div class="layout">
+      <!-- LEFT: Editor -->
+      <section class="panel" aria-label="Code Editor">
+        <div class="panelHead">
+          <div class="panelTitle">
+            <span class="dotLamp" aria-hidden="true"></span>
+            <strong>Strategy Code</strong>
+          </div>
+          <div class="smallMeta">
+            <span class="pill"><span class="muted">Entry:</span> <span id="entryName">main.py</span></span>
+          </div>
+        </div>
+
+        <div class="editorGrid">
+  <!-- Top: editor -->
+  <div class="editorTop">
+    <textarea id="code" class="editor" spellcheck="false"> ... </textarea>
+  </div>
+
+  <!-- Bottom: JSON feed + small chart -->
+  <div class="lowerRow">
+    <div class="miniPanel" aria-label="JSON Live Feed">
+      <div class="miniHead">
+        <strong>JSON Live Feed</strong>
+        <span class="pill"><span class="muted">Mode:</span> <span id="feedMode">mock</span></span>
+      </div>
+      <div class="miniBody">
+        <div class="feed" id="liveFeed">{}</div>
+      </div>
+    </div>
+
+    <div class="miniPanel" aria-label="Mini Chart">
+      <div class="miniHead">
+        <strong>Chart</strong>
+        <span class="pill"><span class="muted">Series:</span> <span id="chartSeries">equity</span></span>
+      </div>
+      <div class="miniBody canvasWrap">
+        <canvas id="miniChart" width="600" height="260"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+        <div class="editorFoot">
+          <span class="pill"><span class="muted">Ctrl/⌘ + Enter:</span> Run</span>
+          <span class="pill"><span class="muted">Autosave:</span> <span id="autosave">Off</span></span>
+          <span class="pill"><span class="muted">Lines:</span> <span id="lineCount">—</span></span>
+        </div>
+      </section>
+
+      <!-- RIGHT: Controls + Tabs -->
+      <div class="rightStack">
+  <section class="panel" aria-label="Run Panel">
+          <button class="tab active" data-tab="quick" role="tab" aria-selected="true">Quick Run</button>
+          <button class="tab" data-tab="desc" role="tab" aria-selected="false">Description</button>
+          <button class="tab" data-tab="params" role="tab" aria-selected="false">Parameters</button>
+        </div>
+
+        <div class="tabBody">
+          <!-- Quick Run -->
+          <div class="tabPane" id="tab-quick">
+            <div class="row">
+              <div>
+                <label for="provider">Dataset / Provider</label>
+                <select id="provider">
+                  <option value="yfinance" selected>yfinance</option>
+                  <option value="alpaca">alpaca</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="symbols">Symbols (comma-separated)</label>
+                <input id="symbols" class="input" type="text" value="SPY" />
+              </div>
+            </div>
+
+            <div class="row">
+              <div>
+                <label for="start">Start Date</label>
+                <input id="start" class="input" type="date" value="2024-01-01" />
+              </div>
+              <div>
+                <label for="end">End Date</label>
+                <input id="end" class="input" type="date" value="2025-01-01" />
+              </div>
+            </div>
+
+            <div class="row">
+              <div>
+                <label for="capital">Capital</label>
+                <input id="capital" class="input" type="number" min="0" step="1000" value="50000" />
+              </div>
+              <div>
+                <label for="timeframe">Timeframe</label>
+                <select id="timeframe">
+                  <option value="1Day" selected>1Day</option>
+                  <option value="1Min">1Min</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="runRow">
+              <a class="btn run" href="#" id="btnRun">Run</a>
+              <span class="helper">Runs your current editor code against fetched data and writes artifacts to the run workspace.</span>
+            </div>
+          </div>
+
+          <!-- Description -->
+          <div class="tabPane" id="tab-desc" style="display:none;">
+            <label for="strategyName">Strategy Name</label>
+            <input id="strategyName" class="input" type="text" value="Buy and Hold" />
+
+            <div style="height:10px"></div>
+
+            <label for="strategyDesc">Description</label>
+            <textarea id="strategyDesc" class="input" style="min-height:140px; resize:vertical;">Long-only example strategy. Update this text, then click “Save Strategy”.</textarea>
+
+            <div style="height:10px"></div>
+            <div class="helper">
+              Tip: store these fields alongside <span class="k">files</span> in your Strategy record so “My Strategies” can show name/description.
+            </div>
+          </div>
+
+          <!-- Parameters -->
+          <div class="tabPane" id="tab-params" style="display:none;">
+            <div class="helper">
+              Define UI parameters that your script reads (example: risk, rebalance cadence). For MVP, we keep it simple.
+            </div>
+
+            <div style="height:10px"></div>
+
+            <div class="row">
+              <div>
+                <label for="pRisk">Risk (0–1)</label>
+                <input id="pRisk" class="input" type="number" min="0" max="1" step="0.05" value="0.50" />
+              </div>
+              <div>
+                <label for="pRebalance">Rebalance</label>
+                <select id="pRebalance">
+                  <option value="daily">Daily</option>
+                  <option value="weekly">Weekly</option>
+                  <option value="monthly" selected>Monthly</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="helper">
+              When you wire the runner, send these as a JSON blob (e.g. <span class="k">params_json</span>) with the run request.
+            </div>
+          </div>
+        </div>
+
+        <div class="output" id="output">Output will appear here after “Run”.</div>
+       </section>
+
+  <section class="panel bigChart" aria-label="Chart Panel">
+    <div class="panelHead">
+      <div class="panelTitle">
+        <span class="dotLamp" aria-hidden="true"></span>
+        <strong>Chart</strong>
+      </div>
+      <div class="smallMeta">
+        <span class="pill"><span class="muted">Source:</span> <span id="chartSource">last run</span></span>
+      </div>
+    </div>
+    <div class="miniBody canvasWrap">
+      <canvas id="bigChart" width="900" height="420"></canvas>
+    </div>
+  </section>
+</div>
+
+    </div>
+  </div>
+
+  <script>
+    // ===== Tabs =====
+    const tabs = [...document.querySelectorAll(".tab")];
+    const panes = {
+      quick: document.getElementById("tab-quick"),
+      desc: document.getElementById("tab-desc"),
+      params: document.getElementById("tab-params"),
+    };
+
+    function setTab(key){
+      for (const t of tabs){
+        const active = t.dataset.tab === key;
+        t.classList.toggle("active", active);
+        t.setAttribute("aria-selected", active ? "true" : "false");
+      }
+      for (const k of Object.keys(panes)){
+        panes[k].style.display = (k === key) ? "" : "none";
+      }
+    }
+
+    tabs.forEach(t => t.addEventListener("click", () => setTab(t.dataset.tab)));
+
+    // ===== Editor UX =====
+    const codeEl = document.getElementById("code");
+    const lineCountEl = document.getElementById("lineCount");
+    function updateLineCount(){
+      const lines = (codeEl.value.match(/\n/g) || []).length + 1;
+      lineCountEl.textContent = String(lines);
+    }
+    codeEl.addEventListener("input", updateLineCount);
+    updateLineCount();
+
+    // ===== Buttons =====
+    const out = document.getElementById("output");
+    const btnRun = document.getElementById("btnRun");
+    const btnSave = document.getElementById("btnSave");
+    const btnLive = document.getElementById("btnLive");
+
+    function getQuickRunPayload(){
+      const provider = document.getElementById("provider").value;
+      const symbols = document.getElementById("symbols").value.split(",").map(s => s.trim()).filter(Boolean);
+      const start = document.getElementById("start").value;
+      const end = document.getElementById("end").value;
+      const timeframe = document.getElementById("timeframe").value;
+      const capital = Number(document.getElementById("capital").value || 0);
+
+      // Optional params tab
+      const params = {
+        risk: Number(document.getElementById("pRisk").value || 0),
+        rebalance: document.getElementById("pRebalance").value,
+        capital,
+      };
+
+      return {
+        provider,
+        symbols,
+        start,
+        end,
+        timeframe,
+        timeout_sec: 60,
+        entry: "main.py",
+        files: { "main.py": codeEl.value },
+        params,
+      };
+    }
+
+    async function runNow(){
+  const payload = getQuickRunPayload();
+  out.textContent = "Running…";
+
+  try{
+    const res = await fetch("/api/runs", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    const ct = (res.headers.get("content-type") || "").toLowerCase();
+    const raw = await res.text();
+
+    // If backend returned HTML, show it plainly (this is your current error)
+    if (!ct.includes("application/json")) {
+      out.textContent = `Run error: non-JSON response (HTTP ${res.status})\n\n` + raw.slice(0, 2000);
+      return;
+    }
+
+    const data = JSON.parse(raw);
+
+    if (!res.ok){
+      out.textContent = "Run failed:\n" + JSON.stringify(data, null, 2);
+      return;
+    }
+
+    out.textContent =
+      `status=${data.status} exit_code=${data.exit_code}\n\n` +
+      `--- stdout ---\n${data.stdout || ""}\n\n` +
+      `--- stderr ---\n${data.stderr || ""}\n\n` +
+      `--- artifacts ---\n${(data.artifacts || []).map(a => a.name).join("\\n")}`;
+  }catch(e){
+    out.textContent = "Run error:\n" + (e?.message || String(e));
+  }
+}
+
+
+    async function saveStrategy(){
+      const name = (document.getElementById("strategyName").value || "").trim() || "Untitled Strategy";
+      const description = document.getElementById("strategyDesc").value || "";
+      const payload = {
+        name,
+        description,
+        entry: "main.py",
+        files: { "main.py": codeEl.value }
+      };
+
+      out.textContent = "Saving strategy…";
+
+      try{
+        const res = await fetch("/api/strategies", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        const data = await res.json();
+
+        if (!res.ok){
+          out.textContent = "Save failed:\n" + JSON.stringify(data, null, 2);
+          return;
+        }
+
+        out.textContent = `Saved strategy id=${data.id}\n(Next: show it under “My Strategies” / Strategies page.)`;
+      }catch(e){
+        out.textContent = "Save error:\n" + (e?.message || String(e));
+      }
+    }
+
+    btnRun.addEventListener("click", (e) => { e.preventDefault(); runNow(); });
+    btnSave.addEventListener("click", (e) => { e.preventDefault(); saveStrategy(); });
+    btnLive.addEventListener("click", (e) => {
+      e.preventDefault();
+      alert("Go Live is a placeholder. Wire this to your broker connection + live runner.");
+    });
+
+    // Ctrl/⌘ + Enter to run
+    window.addEventListener("keydown", (e) => {
+      const isMac = navigator.platform.toLowerCase().includes("mac");
+      if ((isMac ? e.metaKey : e.ctrlKey) && e.key === "Enter"){
+        e.preventDefault();
+        runNow();
+      }
+    });
+  </script>
+<script>// ===== Mock JSON live feed (replace later with SSE/WebSocket) =====
+const liveFeedEl = document.getElementById("liveFeed");
+let tick = 0;
+
+function pushFeed(obj){
+  const prev = liveFeedEl.textContent.trim();
+  const line = JSON.stringify(obj);
+  const next = (prev && prev !== "{}") ? (prev + "\n" + line) : line;
+  liveFeedEl.textContent = next.split("\n").slice(-80).join("\n"); // keep last 80 lines
+  liveFeedEl.scrollTop = liveFeedEl.scrollHeight;
+}
+
+setInterval(() => {
+  tick += 1;
+  pushFeed({
+    t: new Date().toISOString(),
+    type: "quote",
+    sym: (document.getElementById("symbols")?.value || "SPY").split(",")[0].trim() || "SPY",
+    px: +(480 + Math.sin(tick/8)*3 + (Math.random()-0.5)).toFixed(2),
+    vol: Math.floor(1000 + Math.random()*2500)
+  });
+}, 1200);
+
+// ===== Tiny chart helper (draws an array of points) =====
+function drawLineChart(canvas, points){
+  const ctx = canvas.getContext("2d");
+  const w = canvas.width, h = canvas.height;
+  ctx.clearRect(0,0,w,h);
+
+  // background
+  ctx.globalAlpha = 1;
+  ctx.fillStyle = "rgba(0,0,0,0.12)";
+  ctx.fillRect(0,0,w,h);
+
+  if (!points || points.length < 2) return;
+
+  const min = Math.min(...points);
+  const max = Math.max(...points);
+  const pad = 18;
+  const span = (max - min) || 1;
+
+  // grid
+  ctx.strokeStyle = "rgba(255,255,255,0.08)";
+  ctx.lineWidth = 1;
+  for (let i=1;i<=3;i++){
+    const y = pad + (h-2*pad)*(i/4);
+    ctx.beginPath();
+    ctx.moveTo(pad, y);
+    ctx.lineTo(w-pad, y);
+    ctx.stroke();
+  }
+
+  // line
+  ctx.strokeStyle = "rgba(34,211,238,0.9)";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  points.forEach((v, i) => {
+    const x = pad + (w-2*pad) * (i/(points.length-1));
+    const y = pad + (h-2*pad) * (1 - ((v - min)/span));
+    if (i === 0) ctx.moveTo(x,y);
+    else ctx.lineTo(x,y);
+  });
+  ctx.stroke();
+
+  // last point
+  const last = points[points.length-1];
+  const lx = pad + (w-2*pad);
+  const ly = pad + (h-2*pad) * (1 - ((last - min)/span));
+  ctx.fillStyle = "rgba(99,102,241,0.95)";
+  ctx.beginPath();
+  ctx.arc(lx, ly, 4, 0, Math.PI*2);
+  ctx.fill();
+}
+
+// Demo series for mini + big chart
+let series = Array.from({length: 40}, (_,i) => 100 + Math.sin(i/6)*4 + i*0.15);
+
+const mini = document.getElementById("miniChart");
+const big = document.getElementById("bigChart");
+
+function tickCharts(){
+  const last = series[series.length-1];
+  series = [...series.slice(1), last + (Math.random()-0.5)*1.5];
+  drawLineChart(mini, series);
+  drawLineChart(big, series);
+}
+tickCharts();
+setInterval(tickCharts, 900);
+</script>
+  {% include "footer.html" %}
+</body>
+</html>

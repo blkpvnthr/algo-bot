@@ -1,0 +1,588 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Brokers</title>
+ <style>
+  :root{
+    --bg:#05060a;
+    --panel:rgba(255,255,255,.06);
+    --line:rgba(255,255,255,.10);
+    --text:#eef0ff;
+    --muted:rgba(238,240,255,.70);
+    --shadow: 0 30px 80px rgba(0,0,0,.55);
+    --radius:22px;
+  }
+
+  *{ box-sizing:border-box; }
+  body{
+    margin:0;
+    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    color:var(--text);
+    background:
+      radial-gradient(1200px 700px at 15% -10%, rgba(99,102,241,.25), transparent 60%),
+      radial-gradient(900px 600px at 85% 0%, rgba(34,211,238,.18), transparent 55%),
+      radial-gradient(800px 700px at 40% 110%, rgba(244,63,94,.12), transparent 60%),
+      var(--bg);
+    min-height:100vh;
+  }
+
+  .wrap{
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px 16px 64px;
+  }
+
+  .topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    margin-bottom: 18px;
+  }
+
+  .title{
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: .2px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+
+  .search{
+    width: min(420px, 55vw);
+    padding: 12px 14px;
+    border-radius: 14px;
+    border: 1px solid var(--line);
+    background: rgba(0,0,0,.25);
+    color: var(--text);
+    outline:none;
+  }
+  .search:focus{
+    border-color: rgba(255,255,255,.22);
+    box-shadow: 0 0 0 4px rgba(99,102,241,.14);
+  }
+
+  /* ✅ 2 rows of 4 cards on desktop */
+  .grid{
+    display:grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+
+  /* Tablet */
+  @media (max-width: 1200px){
+    .grid{ grid-template-columns: repeat(2, 1fr); }
+  }
+
+  /* Mobile */
+  @media (max-width: 680px){
+    .topbar{ flex-direction: column; align-items: stretch; }
+    .search{ width: 100%; }
+    .grid{ grid-template-columns: 1fr; }
+  }
+
+  /* ✅ Grid-friendly card (single column) */
+  .card{
+  position:relative;
+  overflow:hidden;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: linear-gradient(135deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+  box-shadow: var(--shadow);
+  padding: 18px;
+  display:flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 280px;
+  transition: transform .15s ease, background .15s ease, border-color .15s ease;
+}
+
+
+  .card:hover{
+    transform: translateY(-4px);
+    background: linear-gradient(135deg, rgba(255,255,255,.12), rgba(255,255,255,.04));
+    border-color: rgba(255,255,255,.18);
+  }
+
+  /* subtle glow blob */
+  .card::before{
+    content:"";
+    position:absolute;
+    inset:-220px -260px auto auto;
+    width: 520px;
+    height: 520px;
+    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.10), transparent 55%);
+    transform: rotate(12deg);
+    pointer-events:none;
+    opacity:.65;
+  }
+
+  /* ✅ Center logo area for grid cards */
+  .logoArea{
+    z-index:1;
+    display:flex;
+    justify-content:center;
+    margin-top: 2px;
+  }
+
+  .tileStack{
+    position:relative;
+    width: 96px;
+    height: 96px;
+  }
+
+  .tile{
+    position:absolute;
+    inset:0;
+    border-radius: 22px;
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.12);
+    box-shadow: 0 18px 60px rgba(0,0,0,.45);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+  }
+  .tile.back1{ transform: translate(8px, 6px) rotate(6deg); opacity:.35; }
+  .tile.back2{ transform: translate(14px, 12px) rotate(12deg); opacity:.18; }
+
+  .logoInner{
+    width: 72px;
+    height: 72px;
+    border-radius: 16px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight: 950;
+    letter-spacing: .6px;
+    font-size: 28px;
+    color: rgba(255,255,255,.92);
+    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.14), rgba(255,255,255,.06));
+    border: 1px solid rgba(255,255,255,.12);
+  }
+
+  .logoInner img{
+    width: 78%;
+    height: 78%;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 30px rgba(0,0,0,.35));
+  }
+
+  /* ✅ Card text stack */
+/* ✅ Card text stack */
+.left{
+  z-index: 1;
+  display:flex;
+  flex-direction:column;
+  gap: 10px;
+  min-width: 0;
+  text-align: left;
+}
+
+/* ✅ Put logo ABOVE title inside .left */
+.logoArea{
+  z-index:1;
+  display:flex;
+  justify-content:flex-start; /* left aligned */
+  margin-top: 2px;
+  margin-bottom: 2px;
+}
+
+/* ✅ Title row stays normal */
+.nameRow{
+  display:flex;
+  align-items:center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+
+  .name{
+    font-size: 18px;
+    font-weight: 900;
+    letter-spacing: .2px;
+    line-height: 1.15;
+  }
+
+  .badge{
+    font-size: 11px;
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,.16);
+    background: rgba(0,0,0,.22);
+    color: rgba(255,255,255,.86);
+    letter-spacing: .2px;
+    text-transform: uppercase;
+  }
+
+  .sub{
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  .meta{
+    display:flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    font-size: 13px;
+    color: rgba(255,255,255,.82);
+    align-items:center;
+  }
+
+  .stars{
+    display:flex;
+    align-items:center;
+    gap: 8px;
+    font-weight: 800;
+  }
+
+  .starRow{
+    letter-spacing: 1px;
+    opacity: .92;
+    font-size: 12px;
+  }
+
+  .dot{
+    width: 5px;
+    height: 5px;
+    border-radius: 99px;
+    background: rgba(255,255,255,.28);
+  }
+
+  .ctaRow{
+    display:flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .btn{
+    cursor:pointer;
+    border: 1px solid rgba(255,255,255,.18);
+    background: rgba(0,0,0,.22);
+    color: var(--text);
+    padding: 10px 14px;
+    border-radius: 14px;
+    font-weight: 800;
+    letter-spacing:.2px;
+    transition: .15s ease;
+    text-decoration:none;
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+  }
+  .btn:hover{ transform: translateY(-1px); background: rgba(255,255,255,.08); }
+
+  .btn.primary{
+    border-color: rgba(34,211,238,.35);
+    background: linear-gradient(135deg, rgba(34,211,238,.16), rgba(99,102,241,.10));
+  }
+
+  .hint{
+    margin-top: 10px;
+    color: rgba(255,255,255,.55);
+    font-size: 12px;
+  }
+  /* ===== Glass Navbar ===== */
+.navbar{
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  border-bottom: 1px solid var(--line);
+  background: rgba(10,16,30,.45);
+  backdrop-filter: blur(14px);
+}
+
+.navbar .navwrap{
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 12px 18px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 14px;
+}
+
+.navLeft{
+  display:flex;
+  align-items:center;
+  gap: 12px;
+  min-width: 220px;
+}
+
+.navTitle{
+  display:flex;
+  flex-direction:column;
+  line-height:1.1;
+}
+.navTitle strong{
+  font-size: 14px;
+  letter-spacing:.2px;
+}
+.navTitle span{
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.navLinks{
+  display:flex;
+  align-items:center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content:center;
+}
+
+.navLinks a{
+  text-decoration:none;
+  color: rgba(233,238,251,.86);
+  font-size: 13px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  transition: .15s ease;
+}
+.navLinks a:hover{
+  border-color: rgba(255,255,255,.14);
+  background: rgba(255,255,255,.06);
+  transform: translateY(-1px);
+}
+
+.navRight{
+  display:flex;
+  align-items:center;
+  gap: 10px;
+  justify-content:flex-end;
+  min-width: 220px;
+}
+
+.navSearch{
+  width: 220px;
+  max-width: 40vw;
+}
+
+@media (max-width: 900px){
+  .navLeft, .navRight{ min-width: auto; }
+  .navSearch{ width: 160px; }
+}
+</style>
+
+</head>
+
+<body>
+  {% include "navbar.html" %}
+  <div class="wrap">
+    <div class="topbar">
+      <div class="title">Brokers Directory</div>
+      <input id="q" class="search" placeholder="Search brokers…" />
+    </div>
+
+    <div id="grid" class="grid"></div>
+    <div class="hint">Tip: add real logos by setting <code>logoUrl</code> to a local path (e.g. <code>/static/logos/fidelity.svg</code>).</div>
+  </div>
+
+  <script>
+    const brokers = [
+      {
+        id: "fidelity",
+        name: "Fidelity",
+        tier: "Gold",
+        assets: "Stocks, ETFs, Options, Mutual Funds",
+        rating: 4.6,
+        reviews: "—",
+        accounts: "—",
+        blurb: "Full-service brokerage with strong research tools, retirement products, and a wide investment lineup.",
+        cta: { label: "Learn more", href: "#" },
+        logoText: "F",
+        logoUrl: "" // optional: "/static/logos/fidelity.svg"
+      },
+      {
+        id: "schwab",
+        name: "Charles Schwab",
+        tier: "Gold",
+        assets: "Stocks, ETFs, Options, Mutual Funds, Bonds",
+        rating: 4.5,
+        reviews: "—",
+        accounts: "—",
+        blurb: "Broad platform with solid investor education, banking integration, and a popular trading experience.",
+        cta: { label: "Learn more", href: "#" },
+        logoText: "S",
+        logoUrl: ""
+      },
+      {
+        id: "vanguard",
+        name: "Vanguard",
+        tier: "Silver",
+        assets: "Funds, ETFs, Stocks, Bonds",
+        rating: 4.3,
+        reviews: "—",
+        accounts: "—",
+        blurb: "Best known for long-term investing and low-cost index funds and ETFs.",
+        cta: { label: "Learn more", href: "#" },
+        logoText: "V",
+        logoUrl: ""
+      },
+      {
+        id: "robinhood",
+        name: "Robinhood",
+        tier: "Silver",
+        assets: "Stocks, ETFs, Options, Crypto",
+        rating: 4.1,
+        reviews: "—",
+        accounts: "—",
+        blurb: "Mobile-first brokerage designed for quick access and simplicity.",
+        cta: { label: "Learn more", href: "#" },
+        logoText: "RH",
+        logoUrl: ""
+      },
+      {
+        id: "alpaca",
+        name: "Alpaca",
+        tier: "API",
+        assets: "Stocks, ETFs, Crypto (API-driven)",
+        rating: 4.1,
+        reviews: "—",
+        accounts: "—",
+        blurb: "Developer-friendly brokerage API for automated trading, paper/live environments, and streaming data.",
+        cta: { label: "Learn more", href: "#" },
+        logoText: "A",
+        logoUrl: ""
+      },
+      {
+        id: "ibkr",
+        name: "Interactive Brokers",
+        tier: "Platinum",
+        assets: "Stocks, Options, Futures, FX, Bonds",
+        rating: 4.3,
+        reviews: "—",
+        accounts: "—",
+        blurb: "Professional-grade execution and broad market access with powerful tooling.",
+        cta: { label: "Learn more", href: "#" },
+        logoText: "IB",
+        logoUrl: ""
+      },
+      {
+        id: "webull",
+        name: "Webull",
+        tier: "Gold",
+        assets: "Stocks, ETFs, Options",
+        rating: 4.2,
+        reviews: "—",
+        accounts: "—",
+        blurb: "Feature-rich charts and tools with a community-oriented trading experience.",
+        cta: { label: "Learn more", href: "#" },
+        logoText: "W",
+        logoUrl: ""
+      },
+      {
+        id: "tradestation",
+        name: "TradeStation",
+        tier: "Platinum",
+        assets: "Stocks, Futures, Options",
+        rating: 4.4,
+        reviews: "—",
+        accounts: "—",
+        blurb: "Advanced platform with strong tooling for active traders and system builders.",
+        cta: { label: "Learn more", href: "#" },
+        logoText: "TS",
+        logoUrl: ""
+      }
+    ];
+
+    function stars(rating){
+      // 5-star string like ★★★★☆
+      const full = Math.floor(rating);
+      const half = (rating - full) >= 0.5 ? 1 : 0;
+      const empty = 5 - full - half;
+      return "★".repeat(full) + (half ? "★" : "") + "☆".repeat(empty);
+    }
+
+    function esc(s){
+      return String(s)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    function card(b){
+      const ratingText = `${b.rating.toFixed(1)} • ${b.tier}`;
+      const reviews = b.reviews ?? "—";
+      const accounts = b.accounts ?? "—";
+
+      const logo = b.logoUrl
+        ? `<img alt="${esc(b.name)} logo" src="${esc(b.logoUrl)}" />`
+        : `<div class="logoInner">${esc(b.logoText || b.name.slice(0,1))}</div>`;
+
+      // If logoUrl exists, wrap img with inner box to match sizing
+      const logoHtml = b.logoUrl
+        ? `<div class="logoInner"><img alt="${esc(b.name)} logo" src="${esc(b.logoUrl)}"></div>`
+        : `<div class="logoInner">${esc(b.logoText || b.name.slice(0,1))}</div>`;
+
+      return `
+  <section class="card" data-name="${esc((b.name+" "+b.assets+" "+b.tier).toLowerCase())}">
+    <div class="left">
+
+      <!-- ✅ LOGO ABOVE TITLE -->
+      <div class="logoArea">
+        <div class="tileStack">
+          <div class="tile back2"></div>
+          <div class="tile back1"></div>
+          <div class="tile">
+            ${logoHtml}
+          </div>
+        </div>
+      </div>
+
+      <div class="nameRow">
+        <div class="name">${esc(b.name)}</div>
+        <span class="badge">${esc(b.tier)}</span>
+      </div>
+
+      <div class="sub">Tradable assets: ${esc(b.assets)}</div>
+      <div class="sub">${esc(b.blurb)}</div>
+
+      <div class="meta">
+        <div class="stars">
+          <span>${esc(ratingText)}</span>
+          <span class="starRow">${stars(b.rating)}</span>
+        </div>
+        <span class="dot"></span>
+        <span>Reviews: ${esc(reviews)}</span>
+        <span class="dot"></span>
+        <span>Accounts: ${esc(accounts)}</span>
+      </div>
+
+      <div class="ctaRow">
+        <a class="btn primary" href="${esc(b.cta.href)}">${esc(b.cta.label)} →</a>
+        <a class="btn" href="#" onclick="alert('Hook this up to your connect flow for ${esc(b.name)}'); return false;">Connect</a>
+      </div>
+
+    </div>
+  </section>
+`;
+}
+
+    function render(list){
+      document.getElementById("grid").innerHTML = list.map(card).join("");
+    }
+
+    render(brokers);
+
+    document.getElementById("q").addEventListener("input", (e) => {
+      const q = (e.target.value || "").trim().toLowerCase();
+      const items = [...document.querySelectorAll(".card")];
+      for (const it of items){
+        const hay = it.getAttribute("data-name") || "";
+        it.style.display = (!q || hay.includes(q)) ? "" : "none";
+      }
+    });
+  </script>
+
+{% include "footer.html" %}
+</body>
+</html>
