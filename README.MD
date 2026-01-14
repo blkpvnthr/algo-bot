@@ -16,9 +16,9 @@ pip install -r requirements.txt
 ```
 
 ### ⚙️ To Get Started
-Run `tv-alpaca.py` to connect to realtime market data. Trade logic should be written within `tv-alpaca.py`.
+Run `app.py` to connect to realtime market data.
 ```bash
-python tv-alpaca.py
+python app.py
 ```
 
 ### `Place a trade`
