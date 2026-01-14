@@ -1,0 +1,128 @@
+name: Build & Deploy Pages (Flask Static Export)
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      # Make DB + workspaces safe in CI
+      DB_PATH: /tmp/app.db
+      WORKSPACES_DIR: /tmp/workspaces
+      FLASK_ENV: production
+      PYTHONUNBUFFERED: "1"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip wheel setuptools
+          # tools
+          pip install flake8 pytest requests gunicorn
+          # project deps
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Lint (flake8)
+        run: |
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+      - name: Tests (pytest)
+        run: |
+          pytest -q
+
+      # ---- Start the Flask app (Gunicorn) and verify it responds ----
+      - name: Start server
+        run: |
+          mkdir -p /tmp/workspaces
+          # If you have wsgi.py with "app = create_app()", use "wsgi:app"
+          # Otherwise switch to "app:app" or "app:create_app()"
+          gunicorn -b 127.0.0.1:5001 wsgi:app --log-level info --daemon
+          echo "Server started"
+
+      - name: Wait for server to be healthy
+        run: |
+          python - <<'PY'
+          import time, sys, requests
+          url = "http://127.0.0.1:5001/"
+          for i in range(60):
+            try:
+              r = requests.get(url, timeout=1)
+              if r.status_code < 500:
+                print("OK", r.status_code)
+                sys.exit(0)
+            except Exception:
+              pass
+            time.sleep(1)
+          raise SystemExit("Server did not become healthy in time")
+          PY
+
+      # Optional: smoke test important pages
+      - name: Smoke test pages
+        run: |
+          python - <<'PY'
+          import requests
+          pages = ["/", "/brokers", "/scripts"]
+          for p in pages:
+            r = requests.get("http://127.0.0.1:5001"+p, timeout=5)
+            assert r.status_code == 200, (p, r.status_code, r.text[:200])
+          print("Smoke tests passed")
+          PY
+
+      # ---- Static export: fetch the pages while the server is running ----
+      - name: Build static site (export templates)
+        run: |
+          mkdir -p dist
+          curl -fsS http://127.0.0.1:5001/ > dist/index.html
+          curl -fsS http://127.0.0.1:5001/brokers > dist/brokers.html
+          curl -fsS http://127.0.0.1:5001/scripts > dist/scripts.html
+
+          # If you have real static assets, copy them
+          if [ -d web/static ]; then
+            mkdir -p dist/static
+            cp -R web/static/* dist/static/ || true
+          fi
+
+          # Helpful for SPAs/relative routes, optional:
+          # cp dist/index.html dist/404.html
+
+          # show output
+          ls -ლა dist
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
