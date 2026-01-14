@@ -1,4 +1,4 @@
-![Welcome!](images/welcome.png)
+![Welcome!](images/algobot.png)
 
 
 # 📡 algo-bot
