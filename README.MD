@@ -65,10 +65,60 @@ curl -X POST http://localhost:5002/trade -d "symbol=AAPL&qty=1&side=buy"
 
 ```
 algo-bot/
-├── tv-alpaca.py         # Flask + Alpaca integration
-├── templates/           # HTML templates (index, response, webhook)
-├── static/              # Optional for CSS/JS
-├── requirements.txt     # Dependencies
+├── app.py                  # Flask app factory + route registration
+├── wsgi.py                 # Gunicorn entrypoint (app = create_app())
+│
+├── api/                    # REST API blueprints
+│   ├── __init__.py
+│   ├── runs.py             # /api/runs (backtests, execution)
+│   ├── strategies.py       # /api/strategies (saved scripts)
+│   └── schemas.py          # Request/response validation
+│
+├── models/                 # Persistence layer (SQLite)
+│   ├── __init__.py
+│   ├── db.py               # DB init + connection helpers
+│   ├── run_repo.py         # Runs table access
+│   └── strategy_repo.py    # Strategies table access
+│
+├── services/               # Core business logic
+│   ├── __init__.py
+│   ├── data_sources.py     # Alpaca / yfinance loaders
+│   ├── runner_service.py   # Run orchestration (local/Docker)
+│   ├── artifact_service.py # Artifact discovery
+│   ├── storage_service.py  # Workspace + file management
+│   └── limits.py           # Safety limits (timeouts, sizes)
+│
+├── web/
+│   ├── templates/          # Jinja templates (UI)
+│   │   ├── index.html      # Dashboard
+│   │   ├── brokers.html    # Broker cards page
+│   │   ├── scripts.html    # Online IDE / backtester
+│   │   └── navbar.html
+│   │
+│   └── static/             # CSS / JS assets
+│       ├── styles.css
+│       └── scripts.js
+│
+├── data/                   # Local SQLite DB + cached data
+│   └── app.db
+│
+├── workspaces/             # Per-run execution sandboxes
+│   └── <run_id>/
+│       ├── data/
+│       ├── artifacts/
+│       └── run.json
+│
+├── tests/                  # pytest tests
+│   └── test_smoke.py
+│
+├── requirements.txt        # Python dependencies
+├── .github/
+│   └── workflows/
+│       ├── ci.yml          # Lint + tests + app startup
+│       └── pages.yml       # Static export + GitHub Pages deploy
+│
+└── README.md
+
 ```
 
 ---
