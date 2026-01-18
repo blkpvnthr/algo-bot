@@ -62,6 +62,34 @@ def init_db() -> None:
 
             CREATE INDEX IF NOT EXISTS idx_runs_user_created
                 ON runs(user_id, created_at);
+
+            -- ============================
+            -- Insider bot event stream
+            -- ============================
+            CREATE TABLE IF NOT EXISTS insider_events (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                ts INTEGER NOT NULL,
+                event_type TEXT NOT NULL,              -- FORM4_SEEN | BUY_SIGNAL | BUY_PLACED | SELL_SIGNAL | LIQUIDATED | ERROR
+                symbol TEXT,
+                value_usd TEXT,                        -- store as text to avoid float issues
+                accession TEXT,
+                cik TEXT,
+                payload_json TEXT DEFAULT '{}'
+            );
+
+            CREATE INDEX IF NOT EXISTS idx_insider_events_ts
+                ON insider_events(ts);
+
+            CREATE INDEX IF NOT EXISTS idx_insider_events_symbol_ts
+                ON insider_events(symbol, ts);
+
+            -- ============================
+            -- Insider bot dedupe table
+            -- ============================
+            CREATE TABLE IF NOT EXISTS seen_form4 (
+                accession TEXT PRIMARY KEY,
+                first_seen INTEGER NOT NULL
+            );
             """
         )
 

@@ -105,7 +105,6 @@
       gap: 14px;
       align-items: start;
     }
-
     @media (max-width: 1100px){
       .layout{ grid-template-columns: 1fr; }
     }
@@ -119,7 +118,6 @@
       overflow:hidden;
       position:relative;
     }
-
     .panel::before{
       content:"";
       position:absolute;
@@ -170,16 +168,22 @@
       white-space: nowrap;
     }
 
-    /* ===== Editor ===== */
-    .editorWrap{
-      position:relative;
-      z-index:1;
-      padding: 0;
+    .pill{
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.20);
+      padding: 6px 10px;
+      border-radius: 999px;
+      color: rgba(238,240,255,.86);
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      white-space: nowrap;
     }
 
+    /* ===== Editor ===== */
     .editor{
       width: 100%;
-      min-height: 72vh;
+      min-height: 56vh;
       padding: 14px 14px 18px;
       background: rgba(0,0,0,.25);
       color: rgba(238,240,255,.92);
@@ -204,18 +208,71 @@
       background: rgba(0,0,0,.18);
       font-size: 12px;
       color: rgba(238,240,255,.70);
+      flex-wrap: wrap;
     }
 
-    .pill{
-      border: 1px solid rgba(255,255,255,.14);
-      background: rgba(0,0,0,.20);
-      padding: 6px 10px;
-      border-radius: 999px;
-      color: rgba(238,240,255,.86);
-      display:inline-flex;
-      gap:8px;
+    /* ===== NEW: Editor grid + mini panels ===== */
+    .editorGrid{
+      position:relative;
+      z-index:1;
+      display:grid;
+      grid-template-rows: auto auto;
+    }
+
+    .lowerRow{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      padding: 12px;
+      border-top: 1px solid var(--line);
+      background: rgba(0,0,0,.14);
+    }
+    @media (max-width: 900px){
+      .lowerRow{ grid-template-columns: 1fr; }
+    }
+
+    .miniPanel{
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.18);
+      border-radius: 14px;
+      overflow:hidden;
+    }
+
+    .miniHead{
+      display:flex;
       align-items:center;
-      white-space: nowrap;
+      justify-content:space-between;
+      gap: 10px;
+      padding: 10px 10px;
+      border-bottom: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.14);
+      font-size: 12px;
+    }
+
+    .miniBody{
+      padding: 10px;
+    }
+
+    .feed{
+      height: 210px;
+      overflow:auto;
+      padding: 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.22);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 12px;
+      color: rgba(238,240,255,.88);
+      white-space: pre-wrap;
+    }
+
+    .canvasWrap canvas{
+      width: 100%;
+      height: auto;
+      display:block;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.10);
     }
 
     /* ===== Right Tabs ===== */
@@ -277,7 +334,7 @@
       letter-spacing:.2px;
     }
 
-    .input, select{
+    .input, select, textarea.input{
       width: 100%;
       padding: 10px 12px;
       border-radius: 12px;
@@ -286,7 +343,7 @@
       color: var(--text);
       outline:none;
     }
-    .input:focus, select:focus{
+    .input:focus, select:focus, textarea.input:focus{
       border-color: rgba(255,255,255,.22);
       box-shadow: 0 0 0 4px rgba(99,102,241,.14);
     }
@@ -325,124 +382,97 @@
     .muted{ color: rgba(238,240,255,.70); }
     .k{ color: rgba(34,211,238,.95); font-weight: 900; }
 
-      /* ===== Glass Navbar ===== */
-.navbar{
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  border-bottom: 1px solid var(--line);
-  background: rgba(10,16,30,.45);
-  backdrop-filter: blur(14px);
-}
-
-.navbar .navwrap{
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 12px 18px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap: 14px;
-}
-
-.navLeft{
-  display:flex;
-  align-items:center;
-  gap: 12px;
-  min-width: 220px;
-}
-
-.navTitle{
-  display:flex;
-  flex-direction:column;
-  line-height:1.1;
-}
-.navTitle strong{
-  font-size: 14px;
-  letter-spacing:.2px;
-}
-.navTitle span{
-  font-size: 12px;
-  color: var(--muted);
-}
-
-.navLinks{
-  display:flex;
-  align-items:center;
-  gap: 10px;
-  flex-wrap: wrap;
-  justify-content:center;
-}
-
-.navLinks a{
-  text-decoration:none;
-  color: rgba(233,238,251,.86);
-  font-size: 13px;
-  padding: 8px 10px;
-  border-radius: 12px;
-  border: 1px solid transparent;
-  transition: .15s ease;
-}
-.navLinks a:hover{
-  border-color: rgba(255,255,255,.14);
-  background: rgba(255,255,255,.06);
-  transform: translateY(-1px);
-}
-
-.navRight{
-  display:flex;
-  align-items:center;
-  gap: 10px;
-  justify-content:flex-end;
-  min-width: 220px;
-}
-
-.navSearch{
-  width: 220px;
-  max-width: 40vw;
-}
-
-@media (max-width: 900px){
-  .navLeft, .navRight{ min-width: auto; }
-  .navSearch{ width: 160px; }
-}
-
-async function runNow(){
-  const payload = getQuickRunPayload();
-  out.textContent = "Running…";
-
-  try{
-    const res = await fetch("/api/runs", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-
-    const ct = (res.headers.get("content-type") || "").toLowerCase();
-    const raw = await res.text();
-
-    // If backend returned HTML, show it plainly (this is your current error)
-    if (!ct.includes("application/json")) {
-      out.textContent = `Run error: non-JSON response (HTTP ${res.status})\n\n` + raw.slice(0, 2000);
-      return;
+    /* ===== Glass Navbar ===== */
+    .navbar{
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      border-bottom: 1px solid var(--line);
+      background: rgba(10,16,30,.45);
+      backdrop-filter: blur(14px);
     }
 
-    const data = JSON.parse(raw);
-
-    if (!res.ok){
-      out.textContent = "Run failed:\n" + JSON.stringify(data, null, 2);
-      return;
+    .navbar .navwrap{
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 12px 18px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 14px;
     }
 
-    out.textContent =
-      `status=${data.status} exit_code=${data.exit_code}\n\n` +
-      `--- stdout ---\n${data.stdout || ""}\n\n` +
-      `--- stderr ---\n${data.stderr || ""}\n\n` +
-      `--- artifacts ---\n${(data.artifacts || []).map(a => a.name).join("\\n")}`;
-  }catch(e){
-    out.textContent = "Run error:\n" + (e?.message || String(e));
+    .navLeft{
+      display:flex;
+      align-items:center;
+      gap: 12px;
+      min-width: 220px;
+    }
+
+    .navTitle{
+      display:flex;
+      flex-direction:column;
+      line-height:1.1;
+    }
+    .navTitle strong{
+      font-size: 14px;
+      letter-spacing:.2px;
+    }
+    .navTitle span{
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .navLinks{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content:center;
+    }
+
+    .navLinks a{
+      text-decoration:none;
+      color: rgba(233,238,251,.86);
+      font-size: 13px;
+      padding: 8px 10px;
+      border-radius: 12px;
+      border: 1px solid transparent;
+      transition: .15s ease;
+    }
+    .navLinks a:hover{
+      border-color: rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      transform: translateY(-1px);
+    }
+
+    .navRight{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      justify-content:flex-end;
+      min-width: 220px;
+    }
+
+    .navSearch{
+      width: 220px;
+      max-width: 40vw;
+    }
+
+    @media (max-width: 900px){
+      .navLeft, .navRight{ min-width: auto; }
+      .navSearch{ width: 160px; }
+    }
+
+    /* Right column stacking */
+    .rightStack{
+      display:grid;
+      gap: 14px;
+      align-items:start;
+    }
+    .lowerRow{
+    grid-template-columns: 1fr;
   }
-}
 
   </style>
 </head>
@@ -477,218 +507,332 @@ async function runNow(){
           </div>
         </div>
 
-        <div class="editorGrid">
+       <div class="editorGrid">
   <!-- Top: editor -->
   <div class="editorTop">
-    <textarea id="code" class="editor" spellcheck="false"> ... </textarea>
+    <textarea id="code" class="editor" spellcheck="false"># main.py
+def run(data, params):
+    return {"message": "hello", "params": params}
+</textarea>
   </div>
 
-  <!-- Bottom: JSON feed + small chart -->
+  <!-- Bottom: JSON feed -->
   <div class="lowerRow">
     <div class="miniPanel" aria-label="JSON Live Feed">
       <div class="miniHead">
         <strong>JSON Live Feed</strong>
         <span class="pill"><span class="muted">Mode:</span> <span id="feedMode">mock</span></span>
+        <span class="pill"><span class="muted">Last:</span> <span id="feedLast">—</span></span>
       </div>
+
       <div class="miniBody">
         <div class="feed" id="liveFeed">{}</div>
       </div>
     </div>
-
-    <div class="miniPanel" aria-label="Mini Chart">
-      <div class="miniHead">
-        <strong>Chart</strong>
-        <span class="pill"><span class="muted">Series:</span> <span id="chartSeries">equity</span></span>
-      </div>
-      <div class="miniBody canvasWrap">
-        <canvas id="miniChart" width="600" height="260"></canvas>
-      </div>
-    </div>
   </div>
+</div> <!-- ✅ CLOSE editorGrid -->
+
+<div class="editorFoot">
+  <span class="pill"><span class="muted">Ctrl/⌘ + Enter:</span> Run</span>
+  <span class="pill"><span class="muted">Autosave:</span> <span id="autosave">Off</span></span>
+  <span class="pill"><span class="muted">Lines:</span> <span id="lineCount">—</span></span>
 </div>
-
-
-        <div class="editorFoot">
-          <span class="pill"><span class="muted">Ctrl/⌘ + Enter:</span> Run</span>
-          <span class="pill"><span class="muted">Autosave:</span> <span id="autosave">Off</span></span>
-          <span class="pill"><span class="muted">Lines:</span> <span id="lineCount">—</span></span>
-        </div>
       </section>
 
-      <!-- RIGHT: Controls + Tabs -->
+      <!-- RIGHT: Controls + Output + Big Chart -->
       <div class="rightStack">
-  <section class="panel" aria-label="Run Panel">
-          <button class="tab active" data-tab="quick" role="tab" aria-selected="true">Quick Run</button>
-          <button class="tab" data-tab="desc" role="tab" aria-selected="false">Description</button>
-          <button class="tab" data-tab="params" role="tab" aria-selected="false">Parameters</button>
-        </div>
+        <section class="panel" aria-label="Run Panel">
+          <div class="tabs" role="tablist" aria-label="Run Panel Tabs">
+            <button class="tab active" data-tab="quick" role="tab" aria-selected="true" type="button">Quick Run</button>
+            <button class="tab" data-tab="desc" role="tab" aria-selected="false" type="button">Description</button>
+            <button class="tab" data-tab="params" role="tab" aria-selected="false" type="button">Parameters</button>
+          </div>
 
-        <div class="tabBody">
-          <!-- Quick Run -->
-          <div class="tabPane" id="tab-quick">
-            <div class="row">
-              <div>
-                <label for="provider">Dataset / Provider</label>
-                <select id="provider">
-                  <option value="yfinance" selected>yfinance</option>
-                  <option value="alpaca">alpaca</option>
-                </select>
+          <div class="tabBody">
+            <!-- Quick Run -->
+            <div class="tabPane" id="tab-quick">
+              <div class="row">
+                <div>
+                  <label for="provider">Dataset / Provider</label>
+                  <select id="provider">
+                    <option value="yfinance" selected>yfinance</option>
+                    <option value="alpaca">alpaca</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label for="symbols">Symbols (comma-separated)</label>
+                  <input id="symbols" class="input" type="text" value="SPY" />
+                </div>
               </div>
 
-              <div>
-                <label for="symbols">Symbols (comma-separated)</label>
-                <input id="symbols" class="input" type="text" value="SPY" />
+              <div class="row">
+                <div>
+                  <label for="start">Start Date</label>
+                  <input id="start" class="input" type="date" value="2024-01-01" />
+                </div>
+                <div>
+                  <label for="end">End Date</label>
+                  <input id="end" class="input" type="date" value="2025-01-01" />
+                </div>
+              </div>
+
+              <div class="row">
+                <div>
+                  <label for="capital">Capital</label>
+                  <input id="capital" class="input" type="number" min="0" step="1000" value="50000" />
+                </div>
+                <div>
+                  <label for="timeframe">Timeframe</label>
+                  <select id="timeframe">
+                    <option value="1Day" selected>1Day</option>
+                    <option value="1Min">1Min</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="runRow">
+                <a class="btn run" href="#" id="btnRun">Run</a>
+                <span class="helper">Runs your current editor code against fetched data and writes artifacts to the run workspace.</span>
               </div>
             </div>
 
-            <div class="row">
-              <div>
-                <label for="start">Start Date</label>
-                <input id="start" class="input" type="date" value="2024-01-01" />
-              </div>
-              <div>
-                <label for="end">End Date</label>
-                <input id="end" class="input" type="date" value="2025-01-01" />
+            <!-- Description -->
+            <div class="tabPane" id="tab-desc" style="display:none;">
+              <label for="strategyName">Strategy Name</label>
+              <input id="strategyName" class="input" type="text" value="Buy and Hold" />
+
+              <div style="height:10px"></div>
+
+              <label for="strategyDesc">Description</label>
+              <textarea id="strategyDesc" class="input" style="min-height:140px; resize:vertical;">Long-only example strategy. Update this text, then click “Save Strategy”.</textarea>
+
+              <div style="height:10px"></div>
+              <div class="helper">
+                Tip: store these fields alongside <span class="k">files</span> in your Strategy record so “My Strategies” can show name/description.
               </div>
             </div>
 
-            <div class="row">
-              <div>
-                <label for="capital">Capital</label>
-                <input id="capital" class="input" type="number" min="0" step="1000" value="50000" />
+            <!-- Parameters -->
+            <div class="tabPane" id="tab-params" style="display:none;">
+              <div class="helper">
+                Define UI parameters that your script reads (example: risk, rebalance cadence). For MVP, we keep it simple.
               </div>
-              <div>
-                <label for="timeframe">Timeframe</label>
-                <select id="timeframe">
-                  <option value="1Day" selected>1Day</option>
-                  <option value="1Min">1Min</option>
-                </select>
-              </div>
-            </div>
 
-            <div class="runRow">
-              <a class="btn run" href="#" id="btnRun">Run</a>
-              <span class="helper">Runs your current editor code against fetched data and writes artifacts to the run workspace.</span>
+              <div style="height:10px"></div>
+
+              <div class="row">
+                <div>
+                  <label for="pRisk">Risk (0–1)</label>
+                  <input id="pRisk" class="input" type="number" min="0" max="1" step="0.05" value="0.50" />
+                </div>
+                <div>
+                  <label for="pRebalance">Rebalance</label>
+                  <select id="pRebalance">
+                    <option value="daily">Daily</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="monthly" selected>Monthly</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="helper">
+                When you wire the runner, send these as a JSON blob (e.g. <span class="k">params_json</span>) with the run request.
+              </div>
             </div>
           </div>
 
-          <!-- Description -->
-          <div class="tabPane" id="tab-desc" style="display:none;">
-            <label for="strategyName">Strategy Name</label>
-            <input id="strategyName" class="input" type="text" value="Buy and Hold" />
+          <div class="output" id="output">Output will appear here after “Run”.</div>
+        </section>
 
-            <div style="height:10px"></div>
-
-            <label for="strategyDesc">Description</label>
-            <textarea id="strategyDesc" class="input" style="min-height:140px; resize:vertical;">Long-only example strategy. Update this text, then click “Save Strategy”.</textarea>
-
-            <div style="height:10px"></div>
-            <div class="helper">
-              Tip: store these fields alongside <span class="k">files</span> in your Strategy record so “My Strategies” can show name/description.
+        <section class="panel bigChart" aria-label="Chart Panel">
+          <div class="panelHead">
+            <div class="panelTitle">
+              <span class="dotLamp" aria-hidden="true"></span>
+              <strong>Chart</strong>
+            </div>
+            <div class="smallMeta">
+              <span class="pill"><span class="muted">Source:</span> <span id="chartSource">last run</span></span>
             </div>
           </div>
+          <div class="miniBody" style="padding:12px;">
+            <div id="tv_chart_container" style="height:320px; width:100%;"></div>
 
-          <!-- Parameters -->
-          <div class="tabPane" id="tab-params" style="display:none;">
-            <div class="helper">
-              Define UI parameters that your script reads (example: risk, rebalance cadence). For MVP, we keep it simple.
+            <div style="height:12px"></div>
+
+            <div class="pill" style="display:inline-flex; margin-bottom:10px;">
+              <span class="muted">Overlay:</span>&nbsp;<span id="btLabel">Underlying vs Portfolio</span>
             </div>
 
-            <div style="height:10px"></div>
-
-            <div class="row">
-              <div>
-                <label for="pRisk">Risk (0–1)</label>
-                <input id="pRisk" class="input" type="number" min="0" max="1" step="0.05" value="0.50" />
-              </div>
-              <div>
-                <label for="pRebalance">Rebalance</label>
-                <select id="pRebalance">
-                  <option value="daily">Daily</option>
-                  <option value="weekly">Weekly</option>
-                  <option value="monthly" selected>Monthly</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="helper">
-              When you wire the runner, send these as a JSON blob (e.g. <span class="k">params_json</span>) with the run request.
-            </div>
+            <canvas id="btChart" width="900" height="260"
+              style="width:100%; border-radius:12px; border:1px solid rgba(255,255,255,.10); background: rgba(0,0,0,.10);">
+            </canvas>
           </div>
-        </div>
 
-        <div class="output" id="output">Output will appear here after “Run”.</div>
-       </section>
-
-  <section class="panel bigChart" aria-label="Chart Panel">
-    <div class="panelHead">
-      <div class="panelTitle">
-        <span class="dotLamp" aria-hidden="true"></span>
-        <strong>Chart</strong>
+          
+        </section>
       </div>
-      <div class="smallMeta">
-        <span class="pill"><span class="muted">Source:</span> <span id="chartSource">last run</span></span>
-      </div>
-    </div>
-    <div class="miniBody canvasWrap">
-      <canvas id="bigChart" width="900" height="420"></canvas>
-    </div>
-  </section>
-</div>
-
     </div>
   </div>
 
-  <script>
-    // ===== Tabs =====
-    const tabs = [...document.querySelectorAll(".tab")];
+<script src="https://s3.tradingview.com/tv.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  // --- helpers ---
+  const $ = (id) => document.getElementById(id);
+
+  const out = $("output");
+  function safeLog(msg) {
+    try {
+      if (out) out.textContent = String(msg);
+      else console.log(msg);
+    } catch {}
+  }
+
+  function mapInterval(tf){
+    if (tf === "1Min") return "1";
+    if (tf === "1Day") return "D";
+    return "D";
+  }
+
+  function normalizeSymbol(sym){
+    return (sym || "SPY").trim() || "SPY";
+  }
+
+  // --- TradingView ---
+  function renderTradingViewChart(){
+    const symbolsRaw = $("symbols")?.value || "SPY";
+    const symbol = normalizeSymbol(symbolsRaw.split(",")[0]);
+    const tf = $("timeframe")?.value || "1Day";
+    const interval = mapInterval(tf);
+
+    const chartSource = $("chartSource");
+    if (chartSource) chartSource.textContent = `${symbol} · ${interval}`;
+
+    const container = $("tv_chart_container");
+    if (!container) return;
+
+    // TradingView needs TradingView global
+    if (typeof TradingView === "undefined" || !TradingView.widget) {
+      safeLog("TradingView failed to load (TradingView.widget undefined). Check network/CSP.");
+      return;
+    }
+
+    container.innerHTML = "";
+
+    new TradingView.widget({
+      autosize: true,
+      symbol,
+      interval,
+      timezone: "America/New_York",
+      theme: "dark",
+      style: "1",
+      locale: "en",
+      toolbar_bg: "rgba(0,0,0,0.18)",
+      enable_publishing: false,
+      hide_side_toolbar: false,
+      allow_symbol_change: true,
+      container_id: "tv_chart_container",
+    });
+  }
+
+  // --- Tabs ---
+  function initTabs(){
+    const tabs = Array.from(document.querySelectorAll(".tab"));
     const panes = {
-      quick: document.getElementById("tab-quick"),
-      desc: document.getElementById("tab-desc"),
-      params: document.getElementById("tab-params"),
+      quick: $("tab-quick"),
+      desc: $("tab-desc"),
+      params: $("tab-params"),
     };
 
     function setTab(key){
-      for (const t of tabs){
+      tabs.forEach(t => {
         const active = t.dataset.tab === key;
         t.classList.toggle("active", active);
         t.setAttribute("aria-selected", active ? "true" : "false");
-      }
-      for (const k of Object.keys(panes)){
+      });
+      Object.keys(panes).forEach(k => {
+        if (!panes[k]) return;
         panes[k].style.display = (k === key) ? "" : "none";
-      }
+      });
     }
 
     tabs.forEach(t => t.addEventListener("click", () => setTab(t.dataset.tab)));
+  }
 
-    // ===== Editor UX =====
-    const codeEl = document.getElementById("code");
-    const lineCountEl = document.getElementById("lineCount");
+  // --- Editor UX ---
+  function initLineCount(){
+    const codeEl = $("code");
+    const lineCountEl = $("lineCount");
+    if (!codeEl || !lineCountEl) return;
+
     function updateLineCount(){
       const lines = (codeEl.value.match(/\n/g) || []).length + 1;
       lineCountEl.textContent = String(lines);
     }
     codeEl.addEventListener("input", updateLineCount);
     updateLineCount();
+  }
 
-    // ===== Buttons =====
-    const out = document.getElementById("output");
-    const btnRun = document.getElementById("btnRun");
-    const btnSave = document.getElementById("btnSave");
-    const btnLive = document.getElementById("btnLive");
+  // --- Live feed (mock) + sync with chart symbol changes ---
+  function initFeed(){
+    const liveFeedEl = $("liveFeed");
+    const feedModeEl = $("feedMode");
+    if (feedModeEl) feedModeEl.textContent = "mock";
+
+    if (!liveFeedEl) {
+      safeLog("Feed element #liveFeed not found.");
+      return;
+    }
+
+    let tick = 0;
+
+    function pushFeed(obj){
+      const prev = liveFeedEl.textContent.trim();
+      const line = typeof obj === "string" ? obj : JSON.stringify(obj);
+      const next = (prev && prev !== "{}") ? (prev + "\n" + line) : line;
+      liveFeedEl.textContent = next.split("\n").slice(-80).join("\n");
+      liveFeedEl.scrollTop = liveFeedEl.scrollHeight;
+    }
+
+    // start message
+    pushFeed({ t: new Date().toISOString(), type: "status", msg: "feed started" });
+
+    setInterval(() => {
+      tick += 1;
+      const sym = normalizeSymbol(($("symbols")?.value || "SPY").split(",")[0]);
+
+      // push quote
+      pushFeed({
+        t: new Date().toISOString(),
+        type: "quote",
+        sym,
+        px: +(480 + Math.sin(tick/8)*3 + (Math.random()-0.5)).toFixed(2),
+        vol: Math.floor(1000 + Math.random()*2500)
+      });
+    }, 1200);
+  }
+
+  // --- Run / Save buttons (your existing logic, just wrapped safely) ---
+  function initRunSave(){
+    const btnRun = $("btnRun");
+    const btnSave = $("btnSave");
+    const btnLive = $("btnLive");
+    const codeEl = $("code");
 
     function getQuickRunPayload(){
-      const provider = document.getElementById("provider").value;
-      const symbols = document.getElementById("symbols").value.split(",").map(s => s.trim()).filter(Boolean);
-      const start = document.getElementById("start").value;
-      const end = document.getElementById("end").value;
-      const timeframe = document.getElementById("timeframe").value;
-      const capital = Number(document.getElementById("capital").value || 0);
+      const provider = $("provider")?.value || "yfinance";
+      const symbols = ($("symbols")?.value || "SPY").split(",").map(s => s.trim()).filter(Boolean);
+      const start = $("start")?.value || "";
+      const end = $("end")?.value || "";
+      const timeframe = $("timeframe")?.value || "1Day";
+      const capital = Number($("capital")?.value || 0);
 
-      // Optional params tab
       const params = {
-        risk: Number(document.getElementById("pRisk").value || 0),
-        rebalance: document.getElementById("pRebalance").value,
+        risk: Number($("pRisk")?.value || 0),
+        rebalance: $("pRebalance")?.value || "monthly",
         capital,
       };
 
@@ -700,60 +844,53 @@ async function runNow(){
         timeframe,
         timeout_sec: 60,
         entry: "main.py",
-        files: { "main.py": codeEl.value },
+        files: { "main.py": codeEl ? codeEl.value : "" },
         params,
       };
     }
 
     async function runNow(){
-  const payload = getQuickRunPayload();
-  out.textContent = "Running…";
+      const payload = getQuickRunPayload();
+      if (out) out.textContent = "Running…";
 
-  try{
-    const res = await fetch("/api/runs", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+      try{
+        const res = await fetch("/api/runs", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
 
-    const ct = (res.headers.get("content-type") || "").toLowerCase();
-    const raw = await res.text();
+        const ct = (res.headers.get("content-type") || "").toLowerCase();
+        const raw = await res.text();
 
-    // If backend returned HTML, show it plainly (this is your current error)
-    if (!ct.includes("application/json")) {
-      out.textContent = `Run error: non-JSON response (HTTP ${res.status})\n\n` + raw.slice(0, 2000);
-      return;
+        if (!ct.includes("application/json")) {
+          if (out) out.textContent = `Run error: non-JSON response (HTTP ${res.status})\n\n` + raw.slice(0, 2000);
+          return;
+        }
+
+        const data = JSON.parse(raw);
+
+        if (!res.ok){
+          if (out) out.textContent = "Run failed:\n" + JSON.stringify(data, null, 2);
+          return;
+        }
+
+        if (out) out.textContent =
+          `status=${data.status} exit_code=${data.exit_code}\n\n` +
+          `--- stdout ---\n${data.stdout || ""}\n\n` +
+          `--- stderr ---\n${data.stderr || ""}\n\n` +
+          `--- artifacts ---\n${(data.artifacts || []).map(a => a.name).join("\n")}`;
+      }catch(e){
+        if (out) out.textContent = "Run error:\n" + (e?.message || String(e));
+      }
     }
-
-    const data = JSON.parse(raw);
-
-    if (!res.ok){
-      out.textContent = "Run failed:\n" + JSON.stringify(data, null, 2);
-      return;
-    }
-
-    out.textContent =
-      `status=${data.status} exit_code=${data.exit_code}\n\n` +
-      `--- stdout ---\n${data.stdout || ""}\n\n` +
-      `--- stderr ---\n${data.stderr || ""}\n\n` +
-      `--- artifacts ---\n${(data.artifacts || []).map(a => a.name).join("\\n")}`;
-  }catch(e){
-    out.textContent = "Run error:\n" + (e?.message || String(e));
-  }
-}
-
 
     async function saveStrategy(){
-      const name = (document.getElementById("strategyName").value || "").trim() || "Untitled Strategy";
-      const description = document.getElementById("strategyDesc").value || "";
-      const payload = {
-        name,
-        description,
-        entry: "main.py",
-        files: { "main.py": codeEl.value }
-      };
+      const name = ($("strategyName")?.value || "").trim() || "Untitled Strategy";
+      const description = $("strategyDesc")?.value || "";
+      const payload = { name, description, entry: "main.py", files: { "main.py": codeEl ? codeEl.value : "" } };
 
-      out.textContent = "Saving strategy…";
+      if (out) out.textContent = "Saving strategy…";
 
       try{
         const res = await fetch("/api/strategies", {
@@ -761,22 +898,30 @@ async function runNow(){
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         });
-        const data = await res.json();
 
-        if (!res.ok){
-          out.textContent = "Save failed:\n" + JSON.stringify(data, null, 2);
+        const ct = (res.headers.get("content-type") || "").toLowerCase();
+        const raw = await res.text();
+
+        if (!ct.includes("application/json")) {
+          if (out) out.textContent = `Save error: non-JSON response (HTTP ${res.status})\n\n` + raw.slice(0, 2000);
           return;
         }
 
-        out.textContent = `Saved strategy id=${data.id}\n(Next: show it under “My Strategies” / Strategies page.)`;
+        const data = JSON.parse(raw);
+        if (!res.ok){
+          if (out) out.textContent = "Save failed:\n" + JSON.stringify(data, null, 2);
+          return;
+        }
+
+        if (out) out.textContent = `Saved strategy id=${data.id}\n(Next: show it under “My Strategies” / Strategies page.)`;
       }catch(e){
-        out.textContent = "Save error:\n" + (e?.message || String(e));
+        if (out) out.textContent = "Save error:\n" + (e?.message || String(e));
       }
     }
 
-    btnRun.addEventListener("click", (e) => { e.preventDefault(); runNow(); });
-    btnSave.addEventListener("click", (e) => { e.preventDefault(); saveStrategy(); });
-    btnLive.addEventListener("click", (e) => {
+    btnRun?.addEventListener("click", (e) => { e.preventDefault(); runNow(); });
+    btnSave?.addEventListener("click", (e) => { e.preventDefault(); saveStrategy(); });
+    btnLive?.addEventListener("click", (e) => {
       e.preventDefault();
       alert("Go Live is a placeholder. Wire this to your broker connection + live runner.");
     });
@@ -789,47 +934,168 @@ async function runNow(){
         runNow();
       }
     });
-  </script>
-<script>// ===== Mock JSON live feed (replace later with SSE/WebSocket) =====
-const liveFeedEl = document.getElementById("liveFeed");
-let tick = 0;
+  }
 
-function pushFeed(obj){
-  const prev = liveFeedEl.textContent.trim();
-  const line = JSON.stringify(obj);
-  const next = (prev && prev !== "{}") ? (prev + "\n" + line) : line;
-  liveFeedEl.textContent = next.split("\n").slice(-80).join("\n"); // keep last 80 lines
-  liveFeedEl.scrollTop = liveFeedEl.scrollHeight;
+  // --- keep chart + feed in sync when user changes symbol/timeframe ---
+  function initChartSync(){
+    const symbolsEl = $("symbols");
+    const timeframeEl = $("timeframe");
+    let t = null;
+
+    function debounceRerender(){
+      clearTimeout(t);
+      t = setTimeout(renderTradingViewChart, 350);
+    }
+
+    symbolsEl?.addEventListener("input", debounceRerender);
+    timeframeEl?.addEventListener("change", renderTradingViewChart);
+  }
+
+  // --- boot ---
+  window.addEventListener("load", () => {
+    try { initTabs(); } catch (e) { safeLog(e); }
+    try { initLineCount(); } catch (e) { safeLog(e); }
+    try { initRunSave(); } catch (e) { safeLog(e); }
+    try { initFeed(); } catch (e) { safeLog(e); }
+    try { renderTradingViewChart(); } catch (e) { safeLog(e); }
+    try { initChartSync(); } catch (e) { safeLog(e); }
+  });
+
+})();
+</script>
+<script>
+  const codeEl = document.getElementById("code");
+  const out = document.getElementById("output");
+
+  // Treat the editor as the source of truth for the run
+  const ENTRY_PATH = "strategy/main.py";
+
+  function getQuickRunPayload(){
+    const provider = document.getElementById("provider").value;
+    const symbols = document.getElementById("symbols").value
+      .split(",").map(s => s.trim()).filter(Boolean);
+
+    const start = document.getElementById("start").value;
+    const end = document.getElementById("end").value;
+    const timeframe = document.getElementById("timeframe").value;
+    const capital = Number(document.getElementById("capital").value || 0);
+
+    const params = {
+      risk: Number(document.getElementById("pRisk")?.value || 0),
+      rebalance: document.getElementById("pRebalance")?.value || "monthly",
+      capital,
+      provider,
+      symbols,
+      start,
+      end,
+      timeframe,
+    };
+
+    return {
+      provider,
+      symbols,
+      start,
+      end,
+      timeframe,
+      timeout_sec: 60,
+
+      // ✅ run whatever is in the editor
+      entry: ENTRY_PATH,
+      files: { [ENTRY_PATH]: codeEl.value },
+
+      // optional extras your runner may use
+      params,
+    };
+  }
+
+  async function runNow(){
+    const payload = getQuickRunPayload();
+    out.textContent = "Running…";
+
+    try{
+      const res = await fetch("/api/runs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const ct = (res.headers.get("content-type") || "").toLowerCase();
+      const raw = await res.text();
+
+      if (!ct.includes("application/json")){
+        out.textContent = `Run error: non-JSON response (HTTP ${res.status})\n\n` + raw.slice(0, 2000);
+        return;
+      }
+
+      const data = JSON.parse(raw);
+
+      if (!res.ok){
+        out.textContent = "Run failed:\n" + JSON.stringify(data, null, 2);
+        return;
+      }
+
+      out.textContent =
+        `status=${data.status} exit_code=${data.exit_code}\n\n` +
+        `--- stdout ---\n${data.stdout || ""}\n\n` +
+        `--- stderr ---\n${data.stderr || ""}\n\n` +
+        `--- artifacts ---\n${(data.artifacts || []).map(a => a.name).join("\n")}`;
+    }catch(e){
+      out.textContent = "Run error:\n" + (e?.message || String(e));
+    }
+  }
+
+  // Hook your Run button
+  document.getElementById("btnRun")?.addEventListener("click", (e) => {
+    e.preventDefault();
+    runNow();
+  });
+
+  // Ctrl/⌘ + Enter to run
+  window.addEventListener("keydown", (e) => {
+    const isMac = navigator.platform.toLowerCase().includes("mac");
+    const mod = isMac ? e.metaKey : e.ctrlKey;
+    if (mod && e.key === "Enter"){
+      e.preventDefault();
+      runNow();
+    }
+  });
+
+  // ===== Mode toggle + overlay chart =====
+const modeSelect = document.getElementById("modeSelect");
+const btCanvas = document.getElementById("btChart");
+const btLabel = document.getElementById("btLabel");
+const feedLastEl = document.getElementById("feedLast");
+
+let overlayUnderlying = []; // normalized series
+let overlayEquity = [];     // normalized series
+
+function normalizeTo100(arr){
+  if (!arr?.length) return [];
+  const base = Number(arr[0]) || 1;
+  if (!base) return arr.map(() => 100);
+  return arr.map(v => 100 * (Number(v) / base));
 }
 
-setInterval(() => {
-  tick += 1;
-  pushFeed({
-    t: new Date().toISOString(),
-    type: "quote",
-    sym: (document.getElementById("symbols")?.value || "SPY").split(",")[0].trim() || "SPY",
-    px: +(480 + Math.sin(tick/8)*3 + (Math.random()-0.5)).toFixed(2),
-    vol: Math.floor(1000 + Math.random()*2500)
-  });
-}, 1200);
-
-// ===== Tiny chart helper (draws an array of points) =====
-function drawLineChart(canvas, points){
+function drawTwoLineChart(canvas, seriesA, seriesB){
+  if (!canvas) return;
   const ctx = canvas.getContext("2d");
   const w = canvas.width, h = canvas.height;
   ctx.clearRect(0,0,w,h);
 
-  // background
-  ctx.globalAlpha = 1;
   ctx.fillStyle = "rgba(0,0,0,0.12)";
   ctx.fillRect(0,0,w,h);
 
-  if (!points || points.length < 2) return;
+  if (!seriesA?.length || !seriesB?.length) return;
 
-  const min = Math.min(...points);
-  const max = Math.max(...points);
-  const pad = 18;
+  const n = Math.min(seriesA.length, seriesB.length);
+  const A = seriesA.slice(-n);
+  const B = seriesB.slice(-n);
+
+  const all = A.concat(B);
+  const min = Math.min(...all);
+  const max = Math.max(...all);
   const span = (max - min) || 1;
+  const pad = 18;
 
   // grid
   ctx.strokeStyle = "rgba(255,255,255,0.08)";
@@ -842,43 +1108,304 @@ function drawLineChart(canvas, points){
     ctx.stroke();
   }
 
-  // line
-  ctx.strokeStyle = "rgba(34,211,238,0.9)";
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  points.forEach((v, i) => {
-    const x = pad + (w-2*pad) * (i/(points.length-1));
-    const y = pad + (h-2*pad) * (1 - ((v - min)/span));
-    if (i === 0) ctx.moveTo(x,y);
-    else ctx.lineTo(x,y);
+  function plot(points, stroke){
+    ctx.strokeStyle = stroke;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    points.forEach((v, i) => {
+      const x = pad + (w-2*pad) * (i/(points.length-1));
+      const y = pad + (h-2*pad) * (1 - ((v - min)/span));
+      if (i === 0) ctx.moveTo(x,y);
+      else ctx.lineTo(x,y);
+    });
+    ctx.stroke();
+  }
+
+  // underlying (cyan) + equity (violet)
+  plot(A, "rgba(34,211,238,0.9)");
+  plot(B, "rgba(99,102,241,0.9)");
+}
+
+function resetOverlay(){
+  overlayUnderlying = [];
+  overlayEquity = [];
+  drawTwoLineChart(btCanvas, [], []);
+}
+
+function updateOverlayLive(px){
+  // In live mode, we just track underlying and pretend equity ~= underlying (for demo)
+  overlayUnderlying.push(px);
+  overlayEquity.push(px);
+
+  const u = normalizeTo100(overlayUnderlying);
+  const e = normalizeTo100(overlayEquity);
+  drawTwoLineChart(btCanvas, u, e);
+}
+
+function simulateBacktestOverlay(){
+  // For now: equity lags underlying slightly (demo)
+  const n = 140;
+  let u = 100;
+  let e = 100;
+  const uArr = [];
+  const eArr = [];
+
+  for (let i=0;i<n;i++){
+    u *= (1 + (Math.random()-0.5)*0.004);        // underlying
+    e *= (1 + (Math.random()-0.5)*0.002 + 0.0002); // smoother equity w/ slight drift
+    uArr.push(u);
+    eArr.push(e);
+  }
+
+  overlayUnderlying = uArr;
+  overlayEquity = eArr;
+
+  drawTwoLineChart(btCanvas, normalizeTo100(uArr), normalizeTo100(eArr));
+  if (btLabel) btLabel.textContent = "Underlying vs Portfolio (SIM)";
+}
+
+// hook mode select
+if (modeSelect){
+  modeSelect.addEventListener("change", () => {
+    const mode = modeSelect.value;
+    resetOverlay();
+    if (btLabel){
+      btLabel.textContent = mode === "live"
+        ? "Underlying vs Portfolio (Live demo)"
+        : "Underlying vs Portfolio (Backtest)";
+    }
   });
-  ctx.stroke();
-
-  // last point
-  const last = points[points.length-1];
-  const lx = pad + (w-2*pad);
-  const ly = pad + (h-2*pad) * (1 - ((last - min)/span));
-  ctx.fillStyle = "rgba(99,102,241,0.95)";
-  ctx.beginPath();
-  ctx.arc(lx, ly, 4, 0, Math.PI*2);
-  ctx.fill();
 }
 
-// Demo series for mini + big chart
-let series = Array.from({length: 40}, (_,i) => 100 + Math.sin(i/6)*4 + i*0.15);
+// ===== Patch your existing pushFeed to also update last tick + overlay =====
+// If you already have pushFeed(), replace it with this version OR merge the lines in.
+const _origPushFeed = typeof pushFeed === "function" ? pushFeed : null;
 
-const mini = document.getElementById("miniChart");
-const big = document.getElementById("bigChart");
+function pushFeedPatched(obj){
+  // keep your existing behavior
+  if (_origPushFeed) _origPushFeed(obj);
+  else {
+    // minimal fallback if you didn't define pushFeed earlier
+    const liveFeedEl = document.getElementById("liveFeed");
+    if (liveFeedEl){
+      const prev = liveFeedEl.textContent.trim();
+      const line = typeof obj === "string" ? obj : JSON.stringify(obj);
+      const next = (prev && prev !== "{}") ? (prev + "\n" + line) : line;
+      liveFeedEl.textContent = next.split("\n").slice(-80).join("\n");
+      liveFeedEl.scrollTop = liveFeedEl.scrollHeight;
+    }
+  }
 
-function tickCharts(){
-  const last = series[series.length-1];
-  series = [...series.slice(1), last + (Math.random()-0.5)*1.5];
-  drawLineChart(mini, series);
-  drawLineChart(big, series);
+  // update "Last" pill + overlay chart if it is a quote
+  if (obj && typeof obj === "object" && obj.type === "quote"){
+    if (feedLastEl){
+      feedLastEl.textContent = `${obj.sym} ${obj.px}`;
+    }
+    const mode = modeSelect ? modeSelect.value : "live";
+    if (mode === "live"){
+      const px = Number(obj.px);
+      if (Number.isFinite(px)) updateOverlayLive(px);
+    }
+  }
 }
-tickCharts();
-setInterval(tickCharts, 900);
+
+// IMPORTANT: make the rest of your code call pushFeedPatched
+// If you call pushFeed(...) in your interval, change it to pushFeedPatched(...)
+
 </script>
+
+
   {% include "footer.html" %}
 </body>
 </html>
+<script>
+(() => {
+  "use strict";
+  const $ = (id) => document.getElementById(id);
+
+  // ----------- output helper -----------
+  const out = $("output");
+  function writeOutput(text){
+    if (out) out.textContent = String(text);
+    else console.log(text);
+  }
+
+  // ----------- TradingView test -----------
+  function mapInterval(tf){
+    if (tf === "1Min") return "1";
+    if (tf === "1Day") return "D";
+    return "D";
+  }
+
+  function normalizeSymbol(sym){
+    return (sym || "SPY").trim() || "SPY";
+  }
+
+  function renderTradingViewChart(){
+    const container = $("tv_chart_container");
+    if (!container) return;
+
+    const symbolsRaw = $("symbols")?.value || "SPY";
+    const symbol = normalizeSymbol(symbolsRaw.split(",")[0]);
+    const tf = $("timeframe")?.value || "1Day";
+    const interval = mapInterval(tf);
+
+    const chartSource = $("chartSource");
+    if (chartSource) chartSource.textContent = `${symbol} · ${interval}`;
+
+    container.innerHTML = "";
+
+    if (typeof TradingView === "undefined" || !TradingView.widget){
+      writeOutput("TradingView failed to load. Check DevTools Console/Network or CSP blocking https://s3.tradingview.com/tv.js");
+      return;
+    }
+
+    new TradingView.widget({
+      autosize: true,
+      symbol,
+      interval,
+      timezone: "America/New_York",
+      theme: "dark",
+      style: "1",
+      locale: "en",
+      toolbar_bg: "rgba(0,0,0,0.18)",
+      enable_publishing: false,
+      hide_side_toolbar: false,
+      allow_symbol_change: true,
+      container_id: "tv_chart_container",
+    });
+  }
+
+  // ----------- Live feed test (mock) -----------
+  const liveFeedEl = $("liveFeed");
+  const feedModeEl = $("feedMode");
+  const feedLastEl = $("feedLast");
+
+  let tick = 0;
+  let feedTimer = null;
+
+  function pushFeed(obj){
+    if (!liveFeedEl) return;
+    const prev = liveFeedEl.textContent.trim();
+    const line = typeof obj === "string" ? obj : JSON.stringify(obj);
+    const next = (prev && prev !== "{}") ? (prev + "\n" + line) : line;
+    liveFeedEl.textContent = next.split("\n").slice(-120).join("\n");
+    liveFeedEl.scrollTop = liveFeedEl.scrollHeight;
+
+    // show last px in the header pill
+    if (obj && typeof obj === "object" && obj.px != null && feedLastEl){
+      feedLastEl.textContent = `${obj.sym} ${obj.px}`;
+    }
+  }
+
+  function startFeed(){
+    if (feedTimer) clearInterval(feedTimer);
+
+    if (feedModeEl) feedModeEl.textContent = "mock";
+    if (feedLastEl) feedLastEl.textContent = "—";
+    if (liveFeedEl) liveFeedEl.textContent = "{}";
+
+    tick = 0;
+    pushFeed({ t: new Date().toISOString(), type: "status", msg: "feed started" });
+
+    feedTimer = setInterval(() => {
+      tick += 1;
+
+      const sym = normalizeSymbol(($("symbols")?.value || "SPY").split(",")[0]);
+      const base = 480 + Math.sin(tick/8)*3;
+      const px = +(base + (Math.random()-0.5)).toFixed(2);
+
+      pushFeed({
+        t: new Date().toISOString(),
+        type: "quote",
+        sym,
+        px,
+        vol: Math.floor(1000 + Math.random()*2500)
+      });
+    }, 900);
+  }
+
+  // ----------- “Simulate Run” test -----------
+  function simulateRun(){
+    const payload = {
+      provider: $("provider")?.value,
+      symbols: ($("symbols")?.value || "SPY").split(",").map(s => s.trim()).filter(Boolean),
+      start: $("start")?.value,
+      end: $("end")?.value,
+      timeframe: $("timeframe")?.value,
+      capital: Number($("capital")?.value || 0),
+      params: {
+        risk: Number($("pRisk")?.value || 0),
+        rebalance: $("pRebalance")?.value || "monthly",
+      }
+    };
+
+    // fake “runner” result
+    const fake = {
+      status: "ok",
+      exit_code: 0,
+      stdout: "Backtest complete.\nTrades: 2\nSharpe: 0.92\nMaxDD: -4.1%",
+      stderr: "",
+      artifacts: [
+        { name: "equity_curve.json" },
+        { name: "trades.csv" },
+        { name: "metrics.json" }
+      ]
+    };
+
+    writeOutput(
+      `SIMULATED RUN (no backend)\n\n` +
+      `payload:\n${JSON.stringify(payload, null, 2)}\n\n` +
+      `status=${fake.status} exit_code=${fake.exit_code}\n\n` +
+      `--- stdout ---\n${fake.stdout}\n\n` +
+      `--- stderr ---\n${fake.stderr}\n\n` +
+      `--- artifacts ---\n${fake.artifacts.map(a => a.name).join("\n")}`
+    );
+
+    // also inject a “run event” into the feed so you see the UI react
+    pushFeed({ t: new Date().toISOString(), type: "run", msg: "simulated run completed", sym: payload.symbols[0] || "SPY" });
+  }
+
+  // ----------- wiring: sync changes -----------
+  function initSync(){
+    const symbolsEl = $("symbols");
+    const timeframeEl = $("timeframe");
+    let debounce = null;
+
+    function rerenderAll(){
+      renderTradingViewChart();
+      startFeed(); // resets feed to match new symbol/timeframe
+      pushFeed({ t: new Date().toISOString(), type: "status", msg: "synced chart+feed" });
+    }
+
+    if (symbolsEl){
+      symbolsEl.addEventListener("input", () => {
+        clearTimeout(debounce);
+        debounce = setTimeout(rerenderAll, 350);
+      });
+    }
+
+    if (timeframeEl){
+      timeframeEl.addEventListener("change", rerenderAll);
+    }
+  }
+
+  // attach simulate button if present
+  function initSimButton(){
+    const btnSim = $("btnSim");
+    if (!btnSim) return;
+    btnSim.addEventListener("click", (e) => {
+      e.preventDefault();
+      simulateRun();
+    });
+  }
+
+  // boot
+  window.addEventListener("load", () => {
+    renderTradingViewChart();
+    startFeed();
+    initSync();
+    initSimButton();
+  });
+})();
+</script>
