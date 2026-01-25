@@ -381,7 +381,10 @@
     </div>
 
     <div id="grid" class="grid"></div>
-    <div class="hint">Tip: add real logos by setting <code>logoUrl</code> to a local path (e.g. <code>/static/logos/fidelity.svg</code>).</div>
+    <div class="hint">
+      Tip: add real logos by setting <code>logoUrl</code> to a local path
+      (e.g. <code>/static/images/icons/fidelity-icon.jpeg</code>).
+    </div>
   </div>
 
   <script>
@@ -396,8 +399,8 @@
         accounts: "—",
         blurb: "Full-service brokerage with strong research tools, retirement products, and a wide investment lineup.",
         cta: { label: "Learn more", href: "#" },
-        logoText: "F",
-        logoUrl: "../../images/icons/fidelity-icon.jpeg"// optional: "/static/logos/fidelity.svg"
+        logoText: "Fidelity",
+        logoUrl: "{{ url_for('static', filename='images/icons/fidelity.png') }}"
       },
       {
         id: "schwab",
@@ -410,7 +413,7 @@
         blurb: "Broad platform with solid investor education, banking integration, and a popular trading experience.",
         cta: { label: "Learn more", href: "#" },
         logoText: "S",
-        logoUrl: "../../images/icons//schwab.png"
+        logoUrl: "{{ url_for('static', filename='images/icons/schwab.png') }}"
       },
       {
         id: "vanguard",
@@ -423,7 +426,7 @@
         blurb: "Best known for long-term investing and low-cost index funds and ETFs.",
         cta: { label: "Learn more", href: "#" },
         logoText: "V",
-        logoUrl: "../../images/icons//vanguard2.png"
+        logoUrl: "{{ url_for('static', filename='images/icons/vanguard2.png') }}"
       },
       {
         id: "robinhood",
@@ -436,7 +439,7 @@
         blurb: "Mobile-first brokerage designed for quick access and simplicity.",
         cta: { label: "Learn more", href: "#" },
         logoText: "RH",
-        logoUrl: "../../images/icons//robinhood.png"
+        logoUrl: "{{ url_for('static', filename='images/icons/robinhood.png') }}"
       },
       {
         id: "alpaca",
@@ -449,7 +452,7 @@
         blurb: "Developer-friendly brokerage API for automated trading, paper/live environments, and streaming data.",
         cta: { label: "Learn more", href: "#" },
         logoText: "A",
-        logoUrl: "../../images/icons//alpaca2.png"
+        logoUrl: "{{ url_for('static', filename='images/icons/alpaca.png') }}"
       },
       {
         id: "ibkr",
@@ -462,7 +465,7 @@
         blurb: "Professional-grade execution and broad market access with powerful tooling.",
         cta: { label: "Learn more", href: "#" },
         logoText: "IB",
-        logoUrl: "../../images/icons//ib.png"
+        logoUrl: "{{ url_for('static', filename='images/icons/ib.png') }}"
       },
       {
         id: "webull",
@@ -475,7 +478,7 @@
         blurb: "Feature-rich charts and tools with a community-oriented trading experience.",
         cta: { label: "Learn more", href: "#" },
         logoText: "W",
-        logoUrl: "../../images/icons//webull.png"
+        logoUrl: "{{ url_for('static', filename='images/icons/webull.png') }}"
       },
       {
         id: "tradestation",
@@ -488,7 +491,7 @@
         blurb: "Advanced platform with strong tooling for active traders and system builders.",
         cta: { label: "Learn more", href: "#" },
         logoText: "TS",
-        logoUrl: "../../images/icons//trade-station.png"
+        logoUrl: "{{ url_for('static', filename='images/icons/tradestation.png') }}"
       }
     ];
 
