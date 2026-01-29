@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AlgoBot</title>
+  <link rel="icon" type="image/x-icon" href="../static/favicon.ico" />
+  <link rel="stylesheet" href="../static/styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+
+  <title>Backtests</title>
+
+  <style>
+    :root{
+      --bg:#05060a;
+      --panel:rgba(255,255,255,.06);
+      --line:rgba(255,255,255,.10);
+      --text:#eef0ff;
+      --muted:rgba(238,240,255,.70);
+      --shadow: 0 18px 60px rgba(0,0,0,.45);
+      --radius:18px;
+      --accent: rgba(34,211,238,.9);
+      --accent2: rgba(99,102,241,.9);
+      --good: rgba(16,185,129,.95);
+      --danger: rgba(239,68,68,.95);
+    }
+
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      color:var(--text);
+      background:
+        radial-gradient(1200px 700px at 15% -10%, rgba(99,102,241,.25), transparent 60%),
+        radial-gradient(900px 600px at 85% 0%, rgba(34,211,238,.18), transparent 55%),
+        radial-gradient(800px 700px at 40% 110%, rgba(244,63,94,.12), transparent 60%),
+        var(--bg);
+      min-height:100vh;
+    }
+
+    /* ===== Page Layout ===== */
+    .page{
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 18px 16px 28px;
+    }
+
+    .headerRow{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+      margin: 8px 0 14px;
+      flex-wrap: wrap;
+    }
+
+    .crumbs{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      color: rgba(238,240,255,.80);
+      font-size: 13px;
+      flex-wrap: wrap;
+    }
+    .crumbs a{
+      color: rgba(233,238,251,.86);
+      text-decoration:none;
+      border-bottom: 1px dashed rgba(255,255,255,.16);
+    }
+    .crumbs a:hover{ border-bottom-color: rgba(255,255,255,.35); }
+    .crumbs .sep{ opacity:.45; }
+
+    .actions{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn{
+      cursor:pointer;
+      border: 1px solid rgba(255,255,255,.16);
+      background: rgba(0,0,0,.18);
+      color: var(--text);
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-weight: 800;
+      letter-spacing:.2px;
+      transition: .15s ease;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.25);
+      user-select:none;
+    }
+    .btn:hover{ transform: translateY(-1px); background: rgba(255,255,255,.07); }
+    .btn.primary{
+      border-color: rgba(34,211,238,.35);
+      background: linear-gradient(135deg, rgba(34,211,238,.16), rgba(99,102,241,.10));
+    }
+    .btn.good{
+      border-color: rgba(16,185,129,.35);
+      background: linear-gradient(135deg, rgba(16,185,129,.18), rgba(34,211,238,.06));
+    }
+    .btn.danger{
+      border-color: rgba(239,68,68,.35);
+      background: linear-gradient(135deg, rgba(239,68,68,.18), rgba(99,102,241,.06));
+    }
+
+    /* ===== Panel ===== */
+    .panel{
+      border: 1px solid var(--line);
+      background: linear-gradient(135deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      position:relative;
+    }
+    .panel::before{
+      content:"";
+      position:absolute;
+      inset:-220px -260px auto auto;
+      width: 520px;
+      height: 520px;
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.10), transparent 55%);
+      transform: rotate(12deg);
+      pointer-events:none;
+      opacity:.60;
+    }
+
+    .panelHead{
+      position:relative;
+      z-index:1;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(0,0,0,.18);
+      flex-wrap: wrap;
+    }
+
+    .panelTitle{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .dotLamp{
+      width: 10px;
+      height: 10px;
+      border-radius: 99px;
+      background: rgba(255,255,255,.28);
+      box-shadow: 0 0 0 4px rgba(255,255,255,.06);
+    }
+
+    .panelTitle strong{
+      font-size: 14px;
+      letter-spacing:.2px;
+    }
+
+    .smallMeta{
+      font-size: 12px;
+      color: rgba(238,240,255,.70);
+      white-space: nowrap;
+    }
+
+    .pill{
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.20);
+      padding: 6px 10px;
+      border-radius: 999px;
+      color: rgba(238,240,255,.86);
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      white-space: nowrap;
+    }
+
+    .muted{ color: rgba(238,240,255,.70); }
+    .k{ color: rgba(34,211,238,.95); font-weight: 900; }
+
+    /* ===== Filters ===== */
+    .filters{
+      position:relative;
+      z-index:1;
+      padding: 12px;
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items:center;
+      border-bottom: 1px solid var(--line);
+      background: rgba(0,0,0,.14);
+    }
+
+    .input, select, textarea.input{
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,.22);
+      color: var(--text);
+      outline:none;
+    }
+    .input:focus, select:focus, textarea.input:focus{
+      border-color: rgba(255,255,255,.22);
+      box-shadow: 0 0 0 4px rgba(99,102,241,.14);
+    }
+
+    .filters .search{ flex: 1 1 320px; min-width: 240px; }
+    .filters .select{ flex: 0 0 190px; min-width: 170px; }
+
+    /* ===== List UI ===== */
+    .list{
+      position:relative;
+      z-index:1;
+      display:grid;
+      gap: 10px;
+      padding: 12px;
+    }
+
+    .rowItem{
+      position:relative;
+      overflow:hidden;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.18);
+      box-shadow: 0 16px 40px rgba(0,0,0,.28);
+      padding: 12px;
+      display:grid;
+      grid-template-columns: 64px 1.2fr .9fr auto;
+      gap: 12px;
+      align-items:center;
+      transition: transform .15s ease, background .15s ease, border-color .15s ease;
+    }
+    .rowItem:hover{
+      transform: translateY(-2px);
+      background: rgba(0,0,0,.22);
+      border-color: rgba(255,255,255,.16);
+    }
+
+    @media (max-width: 980px){
+      .rowItem{ grid-template-columns: 64px 1fr; grid-auto-rows: auto; }
+      .rowMeta{ grid-column: 2; }
+      .rowDesc{ grid-column: 2; }
+      .rowActions{ grid-column: 2; justify-content:flex-start; }
+    }
+
+    .logoArea{ display:flex; justify-content:flex-start; }
+    .tileStack{ position:relative; width: 56px; height: 56px; }
+    .tile{
+      position:absolute; inset:0;
+      border-radius: 16px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.12);
+      display:flex; align-items:center; justify-content:center;
+      box-shadow: 0 18px 60px rgba(0,0,0,.35);
+    }
+    .tile.back1{ transform: translate(6px, 5px) rotate(6deg); opacity:.30; }
+    .tile.back2{ transform: translate(10px, 9px) rotate(12deg); opacity:.16; }
+
+    .logoInner{
+      width: 42px; height: 42px;
+      border-radius: 12px;
+      display:flex; align-items:center; justify-content:center;
+      font-weight: 950;
+      letter-spacing: .6px;
+      font-size: 16px;
+      color: rgba(255,255,255,.92);
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.14), rgba(255,255,255,.06));
+      border: 1px solid rgba(255,255,255,.12);
+    }
+
+    .rowMain{
+      min-width: 0;
+      display:flex;
+      flex-direction:column;
+      gap: 6px;
+    }
+
+    .nameRow{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .name{
+      font-size: 15px;
+      font-weight: 900;
+      letter-spacing: .2px;
+      line-height: 1.15;
+    }
+
+    .badge{
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.20);
+      color: rgba(255,255,255,.86);
+      letter-spacing: .2px;
+      text-transform: uppercase;
+    }
+
+    .rowDesc{
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.45;
+      min-width: 0;
+      overflow:hidden;
+      text-overflow: ellipsis;
+      display:-webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+
+    .rowMeta{
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      font-size: 12px;
+      color: rgba(255,255,255,.82);
+      align-items:center;
+      justify-content:flex-start;
+    }
+    .dot{
+      width: 5px; height: 5px;
+      border-radius: 99px;
+      background: rgba(255,255,255,.28);
+    }
+
+    .rowActions{
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content:flex-end;
+      align-items:center;
+    }
+
+    /* ===== Modal ===== */
+    .modalBackdrop{
+      position:fixed; inset:0;
+      background: rgba(0,0,0,.55);
+      backdrop-filter: blur(8px);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding: 18px;
+      z-index: 99;
+    }
+    .modal{
+      width: min(760px, 96vw);
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(10,16,30,.72);
+      box-shadow: var(--shadow);
+      padding: 16px;
+      position:relative;
+      z-index: 100;
+    }
+    .modalHeader{
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      padding: 6px 6px 12px;
+      border-bottom: 1px solid rgba(255,255,255,.10);
+      margin-bottom: 12px;
+    }
+    .modalHeader h3{ margin:0; font-size: 15px; letter-spacing:.2px; }
+    .xbtn{
+      border: 1px solid rgba(255,255,255,.16);
+      background: rgba(0,0,0,.25);
+      color: rgba(255,255,255,.9);
+      border-radius: 12px;
+      padding: 8px 10px;
+      cursor:pointer;
+      font-weight: 900;
+    }
+
+    .formGrid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .field{ display:flex; flex-direction:column; gap:6px; }
+    .field label{
+      font-size: 12px;
+      color: rgba(255,255,255,.78);
+      font-weight: 800;
+      letter-spacing:.2px;
+    }
+    .field textarea{ min-height: 110px; resize: vertical; }
+    .modalFooter{
+      display:flex;
+      justify-content:flex-end;
+      gap: 10px;
+      padding-top: 12px;
+      flex-wrap: wrap;
+    }
+    @media (max-width: 720px){
+      .formGrid{ grid-template-columns: 1fr; }
+    }
+    /* ===== Glass Navbar ===== */
+.navbar{
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  border-bottom: 1px solid var(--line);
+  background: rgba(10,16,30,.45);
+  backdrop-filter: blur(14px);
+}
+
+.navbar .navwrap{
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 12px 18px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 14px;
+}
+
+.navLeft{
+  display:flex;
+  align-items:center;
+  gap: 12px;
+  min-width: 220px;
+}
+
+.navTitle{
+  display:flex;
+  flex-direction:column;
+  line-height:1.1;
+}
+.navTitle strong{
+  font-size: 14px;
+  letter-spacing:.2px;
+}
+.navTitle span{
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.navLinks{
+  display:flex;
+  align-items:center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content:center;
+}
+
+.navLinks a{
+  text-decoration:none;
+  color: rgba(233,238,251,.86);
+  font-size: 13px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  transition: .15s ease;
+}
+.navLinks a:hover{
+  border-color: rgba(255,255,255,.14);
+  background: rgba(255,255,255,.06);
+  transform: translateY(-1px);
+}
+
+.navRight{
+  display:flex;
+  align-items:center;
+  gap: 10px;
+  justify-content:flex-end;
+  min-width: 220px;
+}
+
+.navSearch{
+  width: 220px;
+  max-width: 40vw;
+}
+
+@media (max-width: 900px){
+  .navLeft, .navRight{ min-width: auto; }
+  .navSearch{ width: 160px; }
+}
+  </style>
+</head>
+
+<body>
+  {% include "navbar.html" %}
+
+  <div class="page">
+    <div class="headerRow">
+      <div class="crumbs" aria-label="Breadcrumbs">
+        <a href="/">Dashboard</a>
+        <span class="sep">›</span>
+        <span class="k">Backtests</span>
+      </div>
+
+      <div class="actions">
+        <a class="btn primary" href="#" id="btnAdd">＋ New Strategy</a>
+      </div>
+    </div>
+
+    <section class="panel" aria-label="Backtests">
+      <div class="panelHead">
+        <div class="panelTitle">
+          <span class="dotLamp" aria-hidden="true"></span>
+          <strong>Backtests</strong>
+        </div>
+        <div class="smallMeta">
+          <span class="pill"><span class="muted">Total:</span> <span id="totalCount">0</span></span>
+        </div>
+      </div>
+
+      <div class="filters">
+        <input id="q" class="input search" type="search" placeholder="Search by name, tag, market, timeframe..." />
+        <select id="fMarket" class="input select">
+          <option value="">All Markets</option>
+          <option>Stocks</option>
+          <option>Options</option>
+          <option>Crypto</option>
+          <option>Forex</option>
+          <option>Futures</option>
+        </select>
+        <select id="fTF" class="input select">
+          <option value="">All Timeframes</option>
+          <option>1m</option><option>5m</option><option>15m</option>
+          <option>1H</option><option>4H</option><option>1D</option><option>1W</option>
+        </select>
+      </div>
+
+      <div class="list" id="list"></div>
+    </section>
+  </div>
+
+  <!-- ===== Modal ===== -->
+  <div id="backdrop" class="modalBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal">
+      <div class="modalHeader">
+        <h3 id="modalTitle">New Strategy</h3>
+        <button class="xbtn" id="closeModal" type="button">✕</button>
+      </div>
+
+      <form id="form">
+        <div class="formGrid">
+          <div class="field">
+            <label for="sName">Strategy Name</label>
+            <input id="sName" class="input" required placeholder="e.g., Breakout Pullback" />
+          </div>
+
+          <div class="field">
+            <label for="sTag">Tag</label>
+            <input id="sTag" class="input" placeholder="e.g., Momentum / Swing / Scalping" />
+          </div>
+
+          <div class="field">
+            <label for="sMarket">Market</label>
+            <select id="sMarket" class="input">
+              <option>Stocks</option>
+              <option>Options</option>
+              <option>Crypto</option>
+              <option>Forex</option>
+              <option>Futures</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="sTF">Timeframe</label>
+            <select id="sTF" class="input">
+              <option>1m</option><option>5m</option><option>15m</option>
+              <option>1H</option><option>4H</option><option>1D</option><option>1W</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="sWin">Win Rate (optional)</label>
+            <input id="sWin" class="input" placeholder="e.g., 58%" />
+          </div>
+
+          <div class="field">
+            <label for="sRR">Avg R:R (optional)</label>
+            <input id="sRR" class="input" placeholder="e.g., 1:2.1" />
+          </div>
+
+          <div class="field" style="grid-column: 1 / -1;">
+            <label for="sDesc">Description / Rules</label>
+            <textarea id="sDesc" class="input" placeholder="Entry conditions, invalidation, risk rules, exit plan..."></textarea>
+          </div>
+        </div>
+
+        <div class="modalFooter">
+          <button class="btn danger" id="btnDelete" type="button" style="display:none;">Delete</button>
+          <button class="btn" id="btnCancel" type="button">Cancel</button>
+          <button class="btn good" id="btnSave" type="submit">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+  (function(){
+    "use strict";
+    const $ = (id) => document.getElementById(id);
+
+    const listEl = $("list");
+    const totalCount = $("totalCount");
+
+    const q = $("q");
+    const fMarket = $("fMarket");
+    const fTF = $("fTF");
+
+    const btnAdd = $("btnAdd");
+    const backdrop = $("backdrop");
+    const modalTitle = $("modalTitle");
+    const closeModalBtn = $("closeModal");
+    const btnCancel = $("btnCancel");
+    const btnDelete = $("btnDelete");
+
+    const form = $("form");
+    const sName = $("sName");
+    const sTag = $("sTag");
+    const sMarket = $("sMarket");
+    const sTF = $("sTF");
+    const sWin = $("sWin");
+    const sRR = $("sRR");
+    const sDesc = $("sDesc");
+
+    const KEY = "my_Backtests_v1";
+    let Backtests = [];
+    let editingIndex = null;
+
+    const seed = [
+      { name:"Breakout Pullback", tag:"Momentum", market:"Stocks", tf:"1H", win:"56%", rr:"1:2.0", desc:"Trade breakouts on volume. Wait for pullback to key level. Stop below structure. Partial at 1R, trail remainder." },
+      { name:"Mean Reversion Bands", tag:"Reversion", market:"Options", tf:"15m", win:"61%", rr:"1:1.6", desc:"Fade extremes at bands with confirmation. Avoid strong trend days. Close at VWAP / mid-band." },
+      { name:"Trend Continuation", tag:"Trend", market:"Forex", tf:"4H", win:"54%", rr:"1:2.4", desc:"HTF bias + continuation entry on retest. Exit on trend break." },
+      { name:"Range Scalps", tag:"Scalping", market:"Crypto", tf:"5m", win:"63%", rr:"1:1.3", desc:"Buy support/sell resistance with strict stops. Take profit quickly; skip news spikes." },
+    ];
+
+    function load(){
+      try{
+        const raw = localStorage.getItem(KEY);
+        Backtests = raw ? JSON.parse(raw) : seed;
+      }catch{
+        Backtests = seed;
+      }
+    }
+
+    function persist(){
+      localStorage.setItem(KEY, JSON.stringify(Backtests));
+    }
+
+    function letters(name){
+      const parts = (name || "").trim().split(/\s+/).slice(0,2);
+      const s = parts.map(p => p[0]?.toUpperCase() || "").join("");
+      return s || "S";
+    }
+
+    function esc(str){
+      return String(str ?? "")
+        .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;").replaceAll("'","&#039;");
+    }
+
+    function rowItem(s, idx){
+      return `
+        <div class="rowItem" data-idx="${idx}">
+          <div class="logoArea" aria-hidden="true">
+            <div class="tileStack">
+              <div class="tile back2"></div>
+              <div class="tile back1"></div>
+              <div class="tile"><div class="logoInner">${letters(s.name)}</div></div>
+            </div>
+          </div>
+
+          <div class="rowMain">
+            <div class="nameRow">
+              <div class="name">${esc(s.name)}</div>
+              ${s.tag ? `<span class="badge">${esc(s.tag)}</span>` : ``}
+            </div>
+            <div class="rowDesc">${esc(s.desc || "No description yet.")}</div>
+          </div>
+
+          <div class="rowMeta">
+            <span>${esc(s.market || "—")}</span>
+            <span class="dot"></span>
+            <span>${esc(s.tf || "—")}</span>
+            ${s.win ? `<span class="dot"></span><span>Win ${esc(s.win)}</span>` : ``}
+            ${s.rr ? `<span class="dot"></span><span>R:R ${esc(s.rr)}</span>` : ``}
+          </div>
+
+          <div class="rowActions">
+            <a class="btn primary" href="/scripts?strategy=${encodeURIComponent(s.name)}">Open</a>
+            <button class="btn" type="button" data-action="edit">Edit</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function applyFilter(){
+      const needle = (q.value || "").toLowerCase();
+      const m = fMarket.value;
+      const tf = fTF.value;
+
+      const filtered = Backtests.filter(s => {
+        const blob = `${s.name} ${s.tag} ${s.market} ${s.tf} ${s.desc} ${s.win} ${s.rr}`.toLowerCase();
+        const okQ = !needle || blob.includes(needle);
+        const okM = !m || s.market === m;
+        const okTF = !tf || s.tf === tf;
+        return okQ && okM && okTF;
+      });
+
+      totalCount.textContent = String(filtered.length);
+      listEl.innerHTML = filtered.map((s) => rowItem(s, Backtests.indexOf(s))).join("");
+    }
+
+    function openModal(mode, idx=null){
+      backdrop.style.display = "flex";
+      document.body.style.overflow = "hidden";
+
+      if(mode === "new"){
+        modalTitle.textContent = "New Strategy";
+        editingIndex = null;
+        btnDelete.style.display = "none";
+        form.reset();
+        sMarket.value = "Stocks";
+        sTF.value = "1H";
+        sName.focus();
+      } else {
+        modalTitle.textContent = "Edit Strategy";
+        editingIndex = idx;
+        btnDelete.style.display = "inline-flex";
+
+        const s = Backtests[idx];
+        sName.value = s.name || "";
+        sTag.value = s.tag || "";
+        sMarket.value = s.market || "Stocks";
+        sTF.value = s.tf || "1H";
+        sWin.value = s.win || "";
+        sRR.value = s.rr || "";
+        sDesc.value = s.desc || "";
+        sName.focus();
+      }
+    }
+
+    function closeModal(){
+      backdrop.style.display = "none";
+      document.body.style.overflow = "";
+    }
+
+    // UI events
+    btnAdd.addEventListener("click", (e) => { e.preventDefault(); openModal("new"); });
+    closeModalBtn.addEventListener("click", closeModal);
+    btnCancel.addEventListener("click", (e) => { e.preventDefault(); closeModal(); });
+
+    backdrop.addEventListener("click", (e) => {
+      if (e.target === backdrop) closeModal();
+    });
+
+    q.addEventListener("input", applyFilter);
+    fMarket.addEventListener("change", applyFilter);
+    fTF.addEventListener("change", applyFilter);
+
+    // List actions (Edit)
+    listEl.addEventListener("click", (e) => {
+      const btn = e.target.closest("button");
+      if (!btn) return;
+
+      const action = btn.dataset.action;
+      const row = e.target.closest(".rowItem");
+      if (!row) return;
+
+      const idx = Number(row.dataset.idx);
+      if (action === "edit") openModal("edit", idx);
+    });
+
+    // Save / Update
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      const payload = {
+        name: sName.value.trim(),
+        tag: sTag.value.trim(),
+        market: sMarket.value,
+        tf: sTF.value,
+        win: sWin.value.trim(),
+        rr: sRR.value.trim(),
+        desc: sDesc.value.trim(),
+      };
+
+      if (!payload.name) return;
+
+      if (editingIndex === null) Backtests.unshift(payload);
+      else Backtests[editingIndex] = payload;
+
+      persist();
+      closeModal();
+      applyFilter();
+    });
+
+    // Delete
+    btnDelete.addEventListener("click", (e) => {
+      e.preventDefault();
+      if (editingIndex === null) return;
+      if (!confirm("Delete this strategy?")) return;
+
+      Backtests.splice(editingIndex, 1);
+      persist();
+      closeModal();
+      applyFilter();
+    });
+
+    // Init
+    load();
+    applyFilter();
+  })();
+  </script>
+
+  {% include "footer.html" %}
+</body>
+</html>

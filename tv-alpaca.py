@@ -9,28 +9,32 @@ from pathlib import Path
 from threading import Thread
 from uuid import UUID
 from datetime import datetime
+import websocket # pyright: ignore[reportMissingImports]
+from websocket import WebSocketApp, enableTrace # pyright: ignore[reportMissingImports]
 
-import pandas as pd
-import yfinance as yf
-from flask import Flask, render_template, request, jsonify, send_from_directory
+# pandas may not be available in all environments (language-server/runtime); import lazily in functions.
+pd = None
+try:
+    import pandas as pd  # type: ignore
+except Exception:
+    pd = None
 
-from websocket import WebSocketApp, enableTrace  # websocket-client
+import yfinance as yf # pyright: ignore[reportMissingImports]
 
-from alpaca.trading.client import TradingClient
-from alpaca.trading.enums import OrderSide, TimeInForce
-from alpaca.trading.requests import MarketOrderRequest
+from alpaca.trading.client import TradingClient # pyright: ignore[reportMissingImports]
+from alpaca.trading.enums import OrderSide, TimeInForce # pyright: ignore[reportMissingImports]
+from alpaca.data import StockHistoricalDataClient # pyright: ignore[reportMissingImports]
+from alpaca.data.live import StockDataStream # pyright: ignore[reportMissingImports]
+
 
 # Optional (historical data):
-from alpaca.data.historical import StockHistoricalDataClient
-from alpaca.data.requests import StockBarsRequest
-from alpaca.data.timeframe import TimeFrame
+from alpaca.data.historical import StockHistoricalDataClient # pyright: ignore[reportMissingImports]
+from alpaca.data.timeframe import TimeFrame # pyright: ignore[reportMissingImports]
+
 
 # -----------------------------
 # Config (ENV ONLY)
 # -----------------------------
-ALPACA_API_KEY = os.getenv("ALPACA_API_KEY", "")
-ALPACA_SECRET_KEY = os.getenv("ALPACA_SECRET_KEY", "")
-ALPACA_PAPER = os.getenv("ALPACA_PAPER", "true").lower() == "true"
 
 WS_URL = os.getenv("ALPACA_WS_URL", "wss://stream.data.alpaca.markets/v2/iex")
 RUNNER_IMAGE = os.getenv("RUNNER_IMAGE", "trading-runner:latest")
@@ -44,12 +48,6 @@ RUN_PIDS = os.getenv("RUN_PIDS", "256")
 
 # DB
 DB_PATH = os.getenv("DB_PATH", "app.db")
-
-app = Flask(
-    __name__,
-    template_folder="templates",  # keep your existing templates folder
-    static_folder="static",
-)
 
 # -----------------------------
 # Init clients

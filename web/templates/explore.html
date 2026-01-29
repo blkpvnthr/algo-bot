@@ -1,0 +1,600 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Explore</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
+  <style>
+    :root{
+      --bg:#05060a;
+      --panel:rgba(255,255,255,.06);
+      --line:rgba(255,255,255,.10);
+      --text:#eef0ff;
+      --muted:rgba(238,240,255,.70);
+      --shadow: 0 18px 60px rgba(0,0,0,.45);
+      --radius:18px;
+      --accent: rgba(34,211,238,.9);
+      --accent2: rgba(99,102,241,.9);
+      --good: rgba(16,185,129,.95);
+      --warn: rgba(245,158,11,.95);
+      --danger: rgba(239,68,68,.95);
+    }
+
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      color:var(--text);
+      background:
+        radial-gradient(1200px 700px at 15% -10%, rgba(99,102,241,.25), transparent 60%),
+        radial-gradient(900px 600px at 85% 0%, rgba(34,211,238,.18), transparent 55%),
+        radial-gradient(800px 700px at 40% 110%, rgba(244,63,94,.12), transparent 60%),
+        var(--bg);
+      min-height:100vh;
+    }
+
+    .page{ max-width: 1400px; margin:0 auto; padding:18px 16px 28px; }
+
+    .panel{
+      border: 1px solid var(--line);
+      background: linear-gradient(135deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      position:relative;
+    }
+    .panelHead{
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(0,0,0,.18);
+    }
+    .panelHead strong{ font-size:14px; letter-spacing:.2px; }
+    .pill{
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.20);
+      padding: 6px 10px;
+      border-radius: 999px;
+      color: rgba(238,240,255,.86);
+      display:inline-flex;
+      gap:8px; align-items:center;
+      white-space: nowrap;
+      font-size:12px;
+    }
+    .muted{ color:var(--muted); }
+
+    .hero{
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 14px;
+      align-items:start;
+      margin-bottom: 14px;
+    }
+    @media (max-width: 1100px){ .hero{ grid-template-columns: 1fr; } }
+
+    .searchWrap{ padding: 14px; position:relative; }
+    .searchTitle{ font-weight:900; font-size:18px; margin: 0 0 6px; }
+    .searchSub{ margin:0 0 12px; color: var(--muted); font-size:13px; line-height:1.4; }
+
+    .searchRow{ display:flex; gap:10px; flex-wrap:wrap; }
+    .input{
+      width: 100%;
+      padding: 12px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,.22);
+      color: var(--text);
+      outline:none;
+    }
+    .input:focus{ box-shadow: 0 0 0 4px rgba(99,102,241,.14); border-color: rgba(255,255,255,.22); }
+
+    .btn{
+      cursor:pointer;
+      border: 1px solid rgba(255,255,255,.16);
+      background: rgba(0,0,0,.18);
+      color: var(--text);
+      padding: 11px 14px;
+      border-radius: 12px;
+      font-weight: 900;
+      letter-spacing:.2px;
+      transition: .15s ease;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      user-select:none;
+      white-space:nowrap;
+    }
+    .btn:hover{ transform: translateY(-1px); background: rgba(255,255,255,.07); }
+    .btn.primary{
+      border-color: rgba(34,211,238,.35);
+      background: linear-gradient(135deg, rgba(34,211,238,.16), rgba(99,102,241,.10));
+    }
+
+    .dropdown{
+      position:absolute;
+      top: 132px;
+      left: 14px;
+      right: 14px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.65);
+      backdrop-filter: blur(12px);
+      border-radius: 14px;
+      overflow:hidden;
+      display:none;
+      z-index:20;
+      box-shadow: 0 18px 60px rgba(0,0,0,.45);
+    }
+    .dropItem{
+      padding: 10px 12px;
+      display:flex;
+      justify-content:space-between;
+      gap: 10px;
+      cursor:pointer;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+    .dropItem:last-child{ border-bottom:none; }
+    .dropItem:hover{ background: rgba(255,255,255,.06); }
+    .sym{ font-weight:900; letter-spacing:.2px; }
+    .name{ color:var(--muted); font-size:12px; }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      align-items:start;
+    }
+    @media (max-width: 1100px){ .grid{ grid-template-columns: 1fr; } }
+
+    .cards{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      padding: 12px;
+    }
+    @media (max-width: 900px){ .cards{ grid-template-columns: 1fr; } }
+
+    .card{
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.18);
+      border-radius: 14px;
+      padding: 12px;
+      min-height: 90px;
+    }
+    .card h4{ margin:0 0 8px; font-size:12px; color:var(--muted); font-weight:900; letter-spacing:.2px; }
+    .big{ font-size:22px; font-weight:1000; }
+    .chg{ font-weight:900; }
+    .good{ color: var(--good); }
+    .bad{ color: var(--danger); }
+
+    .list{
+      padding: 12px;
+      display:grid;
+      gap: 10px;
+    }
+    .rowItem{
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.18);
+      border-radius: 14px;
+      padding: 10px 12px;
+      display:flex;
+      justify-content:space-between;
+      gap: 10px;
+      align-items:flex-start;
+    }
+    .rowItem a{ color: rgba(233,238,251,.92); text-decoration:none; border-bottom:1px dashed rgba(255,255,255,.16); }
+    .rowItem a:hover{ border-bottom-color: rgba(255,255,255,.35); }
+    .tiny{ font-size:12px; color:var(--muted); margin-top:2px; }
+
+    .tabs{
+      display:flex; gap: 8px; padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(0,0,0,.18);
+    }
+    .tab{
+      cursor:pointer;
+      font-size: 13px;
+      padding: 8px 10px;
+      border-radius: 12px;
+      border: 1px solid transparent;
+      color: rgba(233,238,251,.86);
+      background: rgba(255,255,255,.00);
+      transition: .15s ease;
+      user-select:none;
+      font-weight: 900;
+    }
+    .tab.active{
+      border-color: rgba(34,211,238,.35);
+      background: linear-gradient(135deg, rgba(34,211,238,.12), rgba(99,102,241,.08));
+      color: rgba(255,255,255,.95);
+    }
+    .tab:hover{ border-color: rgba(255,255,255,.14); background: rgba(255,255,255,.06); transform: translateY(-1px); }
+
+    .pane{ display:none; }
+    .pane.active{ display:block; }
+
+    .hint{ padding: 12px; color: var(--muted); font-size: 13px; line-height:1.45; }
+
+        /* ===== Glass Navbar ===== */
+.navbar{
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  border-bottom: 1px solid var(--line);
+  background: rgba(10,16,30,.45);
+  backdrop-filter: blur(14px);
+}
+
+.navbar .navwrap{
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 12px 18px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 14px;
+}
+
+.navLeft{
+  display:flex;
+  align-items:center;
+  gap: 12px;
+  min-width: 220px;
+}
+
+.navTitle{
+  display:flex;
+  flex-direction:column;
+  line-height:1.1;
+}
+.navTitle strong{
+  font-size: 14px;
+  letter-spacing:.2px;
+}
+.navTitle span{
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.navLinks{
+  display:flex;
+  align-items:center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content:center;
+}
+
+.navLinks a{
+  text-decoration:none;
+  color: rgba(233,238,251,.86);
+  font-size: 13px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  transition: .15s ease;
+}
+.navLinks a:hover{
+  border-color: rgba(255,255,255,.14);
+  background: rgba(255,255,255,.06);
+  transform: translateY(-1px);
+}
+
+.navRight{
+  display:flex;
+  align-items:center;
+  gap: 10px;
+  justify-content:flex-end;
+  min-width: 220px;
+}
+
+.navSearch{
+  width: 220px;
+  max-width: 40vw;
+}
+
+@media (max-width: 900px){
+  .navLeft, .navRight{ min-width: auto; }
+  .navSearch{ width: 160px; }
+}
+  </style>
+</head>
+<body>
+  {% include "navbar.html" %}
+
+  <div class="page">
+    <section class="panel hero">
+      <div class="searchWrap">
+        <div class="searchTitle">Explore</div>
+        <p class="searchSub">
+          Search symbols, view snapshot stats, chart context, and recent news. This is a research hub inspired by common broker “Research & Quotes” workflows
+          (quote lookup + overview + news/events). :contentReference[oaicite:1]{index=1}
+        </p>
+
+        <div class="searchRow">
+          <input id="q" class="input" placeholder="Search (e.g., SPY, AAPL, Tesla, VTI)…" autocomplete="off"/>
+          <button id="btnGo" class="btn primary" type="button">Open</button>
+          <button id="btnStar" class="btn" type="button">★ Watch</button>
+        </div>
+
+        <div class="dropdown" id="drop"></div>
+
+        <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
+          <span class="pill"><span class="muted">Tip:</span> Enter a ticker for a quote snapshot</span>
+          <span class="pill"><span class="muted">Next:</span> Add screeners & reports</span>
+        </div>
+      </div>
+
+      <div class="panel" style="margin:0; border-radius:0; border-left:1px solid var(--line);">
+        <div class="panelHead">
+          <strong>Quick Links</strong>
+          <span class="pill"><span class="muted">Shortcuts</span></span>
+        </div>
+        <div class="list">
+          <div class="rowItem">
+            <div>
+              <div style="font-weight:900;">Stock Screener</div>
+              <div class="tiny">Filter by sector, market cap, momentum, fundamentals</div>
+            </div>
+            <div class="pill">Soon</div>
+          </div>
+          <div class="rowItem">
+            <div>
+              <div style="font-weight:900;">ETF Screener</div>
+              <div class="tiny">Expense ratio, exposures, performance/risk</div>
+            </div>
+            <div class="pill">Soon</div>
+          </div>
+          <div class="rowItem">
+            <div>
+              <div style="font-weight:900;">Market Movers</div>
+              <div class="tiny">Top gainers/losers, volume leaders</div>
+            </div>
+            <div class="pill">Live</div>
+          </div>
+          <div class="rowItem">
+            <div>
+              <div style="font-weight:900;">My Watchlist</div>
+              <div class="tiny">Pinned symbols (stored locally for MVP)</div>
+            </div>
+            <div class="pill">Live</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="grid">
+      <!-- Left: Quote Snapshot -->
+      <section class="panel">
+        <div class="panelHead">
+          <strong>Quote Snapshot</strong>
+          <span class="pill"><span class="muted">Symbol:</span> <span id="symPill">—</span></span>
+        </div>
+
+        <div class="tabs" role="tablist">
+          <button class="tab active" data-tab="overview" type="button">Overview</button>
+          <button class="tab" data-tab="news" type="button">News</button>
+          <button class="tab" data-tab="funds" type="button">Fundamentals</button>
+        </div>
+
+        <div class="pane active" id="pane-overview">
+          <div class="cards">
+            <div class="card">
+              <h4>Last</h4>
+              <div class="big" id="px">—</div>
+              <div class="tiny" id="asof">—</div>
+            </div>
+            <div class="card">
+              <h4>Change</h4>
+              <div class="big chg" id="chg">—</div>
+              <div class="tiny" id="chgPct">—</div>
+            </div>
+            <div class="card">
+              <h4>Day Range</h4>
+              <div class="big" id="range">—</div>
+              <div class="tiny">Low · High</div>
+            </div>
+            <div class="card">
+              <h4>Volume</h4>
+              <div class="big" id="vol">—</div>
+              <div class="tiny">Shares</div>
+            </div>
+          </div>
+          <div class="hint" id="ovHint">Search a symbol to populate quote cards.</div>
+        </div>
+
+        <div class="pane" id="pane-news">
+          <div class="list" id="newsList">
+            <div class="hint">Search a symbol to load related headlines.</div>
+          </div>
+        </div>
+
+        <div class="pane" id="pane-funds">
+          <div class="list" id="fundList">
+            <div class="hint">Hook fundamentals here (PE, EPS, Div, etc.) when available.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right: Movers + Watchlist -->
+      <section class="panel">
+        <div class="panelHead">
+          <strong>Market Movers</strong>
+          <span class="pill"><span class="muted">Source:</span> <span>provider</span></span>
+        </div>
+        <div class="list" id="moversList">
+          <div class="hint">Wire /api/explore/movers to show gainers/losers + volume leaders.</div>
+        </div>
+
+        <div class="panelHead" style="border-top:1px solid var(--line);">
+          <strong>Watchlist</strong>
+          <span class="pill"><span class="muted">Local:</span> <span id="wlCount">0</span></span>
+        </div>
+        <div class="list" id="wlList">
+          <div class="hint">Click ★ Watch to pin the current symbol.</div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+
+    // ---- Tabs ----
+    document.querySelectorAll(".tab").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".tab").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        const key = btn.dataset.tab;
+        document.querySelectorAll(".pane").forEach(p => p.classList.remove("active"));
+        $("pane-" + key).classList.add("active");
+      });
+    });
+
+    // ---- Watchlist (localStorage MVP) ----
+    const WL_KEY = "explore_watchlist_v1";
+    function getWL(){ try { return JSON.parse(localStorage.getItem(WL_KEY) || "[]"); } catch { return []; } }
+    function setWL(arr){ localStorage.setItem(WL_KEY, JSON.stringify(arr)); renderWL(); }
+    function renderWL(){
+      const wl = getWL();
+      $("wlCount").textContent = String(wl.length);
+      const box = $("wlList");
+      box.innerHTML = "";
+      if (!wl.length){
+        box.innerHTML = `<div class="hint">No symbols yet. Search → Open → ★ Watch.</div>`;
+        return;
+      }
+      wl.slice().reverse().forEach(sym => {
+        const el = document.createElement("div");
+        el.className = "rowItem";
+        el.innerHTML = `<div><div style="font-weight:900;">${sym}</div><div class="tiny">Click to load snapshot</div></div>
+                        <button class="btn" type="button" style="padding:8px 10px; font-weight:900;">Open</button>`;
+        el.querySelector("button").addEventListener("click", () => loadSymbol(sym));
+        box.appendChild(el);
+      });
+    }
+
+    // ---- Search dropdown ----
+    let activeSymbol = "";
+    let dropTimer = null;
+
+    async function search(q){
+      const res = await fetch(`/api/explore/search?q=${encodeURIComponent(q)}`);
+      if (!res.ok) return [];
+      return await res.json(); // [{symbol,name,type}]
+    }
+
+    function showDrop(items){
+      const drop = $("drop");
+      if (!items.length){ drop.style.display = "none"; drop.innerHTML = ""; return; }
+      drop.innerHTML = "";
+      items.slice(0,8).forEach(it => {
+        const row = document.createElement("div");
+        row.className = "dropItem";
+        row.innerHTML = `<div><div class="sym">${it.symbol}</div><div class="name">${it.name || ""}</div></div>
+                         <div class="pill">${it.type || "Asset"}</div>`;
+        row.addEventListener("click", () => {
+          drop.style.display = "none";
+          $("q").value = it.symbol;
+          loadSymbol(it.symbol);
+        });
+        drop.appendChild(row);
+      });
+      drop.style.display = "block";
+    }
+
+    $("q").addEventListener("input", () => {
+      clearTimeout(dropTimer);
+      const q = $("q").value.trim();
+      if (q.length < 1){ showDrop([]); return; }
+      dropTimer = setTimeout(async () => showDrop(await search(q)), 180);
+    });
+
+    document.addEventListener("click", (e) => {
+      if (!e.target.closest(".searchWrap")) showDrop([]);
+    });
+
+    // ---- Quote loader ----
+    async function fetchQuote(symbol){
+      const res = await fetch(`/api/explore/quote?symbol=${encodeURIComponent(symbol)}`);
+      if (!res.ok) throw new Error("quote fetch failed");
+      return await res.json();
+    }
+
+    async function fetchNews(symbol){
+      const res = await fetch(`/api/explore/news?symbol=${encodeURIComponent(symbol)}`);
+      if (!res.ok) return [];
+      return await res.json(); // [{title,url,source,ts}]
+    }
+
+    function setChange(el, val){
+      el.textContent = val;
+      el.classList.remove("good","bad");
+      const n = Number(String(val).replace(/[^\d.-]/g,""));
+      if (Number.isFinite(n)){
+        if (n > 0) el.classList.add("good");
+        if (n < 0) el.classList.add("bad");
+      }
+    }
+
+    async function loadSymbol(symbol){
+      symbol = (symbol || "").trim().toUpperCase();
+      if (!symbol) return;
+
+      activeSymbol = symbol;
+      $("symPill").textContent = symbol;
+      $("ovHint").textContent = "Loading…";
+
+      try{
+        const q = await fetchQuote(symbol);
+        $("px").textContent = q.last ?? "—";
+        setChange($("chg"), q.change ?? "—");
+        $("chgPct").textContent = q.change_pct ?? "—";
+        $("range").textContent = (q.day_low != null && q.day_high != null) ? `${q.day_low} · ${q.day_high}` : "—";
+        $("vol").textContent = q.volume ?? "—";
+        $("asof").textContent = q.asof ?? "";
+        $("ovHint").textContent = "";
+
+        // news
+        const items = await fetchNews(symbol);
+        const list = $("newsList");
+        list.innerHTML = "";
+        if (!items.length){
+          list.innerHTML = `<div class="hint">No news returned yet. Wire your provider to /api/explore/news.</div>`;
+        } else {
+          items.slice(0,10).forEach(n => {
+            const row = document.createElement("div");
+            row.className = "rowItem";
+            row.innerHTML = `<div>
+              <div style="font-weight:900;"><a href="${n.url}" target="_blank" rel="noopener noreferrer">${n.title}</a></div>
+              <div class="tiny">${n.source || "source"} · ${n.ts || ""}</div>
+            </div>
+            <div class="pill">Open</div>`;
+            list.appendChild(row);
+          });
+        }
+      }catch(e){
+        $("ovHint").textContent = "Could not load quote. Check /api/explore/quote.";
+      }
+    }
+
+    // ---- Buttons ----
+    $("btnGo").addEventListener("click", () => loadSymbol($("q").value));
+    $("q").addEventListener("keydown", (e) => { if (e.key === "Enter") loadSymbol($("q").value); });
+
+    $("btnStar").addEventListener("click", () => {
+      const sym = activeSymbol || $("q").value.trim().toUpperCase();
+      if (!sym) return;
+      const wl = getWL();
+      if (!wl.includes(sym)) wl.push(sym);
+      setWL(wl);
+    });
+
+    // boot
+    renderWL();
+  </script>
+
+  {% include "footer.html" %}
+</body>
+</html>

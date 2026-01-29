@@ -5,8 +5,7 @@ A real-time trading assistant built with Flask and Python that connects to the A
 
 ---
 
-![Welcome!](images/algobot2.png)
-
+![Welcome!](web/static/images/algobot2.png)
 ## Usage
 
 ### Prerequisites

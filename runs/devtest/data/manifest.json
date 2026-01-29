@@ -1,0 +1,15 @@
+{
+  "meta": {
+    "timeframe": "1Day",
+    "params": {
+      "capital": 50000,
+      "rebalance": "monthly"
+    }
+  },
+  "symbols": [
+    {
+      "symbol": "SPY",
+      "path": "data/SPY.parquet"
+    }
+  ]
+}

@@ -62,6 +62,17 @@ def http_create_run():
     # 2) Create workspace + write code
     ws = create_workspace(run_id)
     write_user_files(ws, files)
+    meta = {
+        "provider": provider,
+        "symbols": symbols,
+        "start": start,
+        "end": end,
+        "timeframe": timeframe,
+        "params": params,  # ✅ include params for the container runner
+    }
+    # 2) Create workspace + write code
+    ws = create_workspace(run_id)
+    write_user_files(ws, files)
 
     # 3) Fetch data server-side
     if provider == "alpaca":
@@ -71,7 +82,6 @@ def http_create_run():
         frames = fetch_yfinance_bars(symbols, start, end, interval=interval)
 
     # 4) Write data + manifest into workspace
-    meta = {"provider": provider, "symbols": symbols, "start": start, "end": end, "timeframe": timeframe}
     write_manifest_and_data(ws, meta, frames)
 
     # 5) Run container
@@ -98,18 +108,6 @@ def http_create_run():
         "stderr": stderr,
         "artifacts": arts,
     })
-
-
-@bp.get("/<run_id>")
-def http_get_run(run_id: str):
-    uid = _user_id()
-    r = get_run(user_id=uid, run_id=run_id)
-    if not r:
-        return jsonify({"error": "not found"}), 404
-
-    # attach artifacts dynamically
-    ws = create_workspace(run_id)  # create_workspace should be idempotent or swap for get_workspace_path()
-    r["artifacts"] = list_artifacts(ws)
     return jsonify(r)
 
 

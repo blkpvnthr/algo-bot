@@ -1,8 +1,7 @@
-# app.py
 from __future__ import annotations
 
 from flask import Flask, jsonify, render_template
-
+from api.explore import bp as explore_bp
 from models.db import init_db
 from api.auth import bp as auth_bp
 from api.strategies import bp as strategies_bp
@@ -25,6 +24,7 @@ def create_app() -> Flask:
     app.register_blueprint(strategies_bp)
     app.register_blueprint(runs_bp)
     app.register_blueprint(insider_events_bp)  # ✅ REGISTER HERE
+    app.register_blueprint(explore_bp)
 
     # -----------------------
     # Health + Pages
@@ -60,6 +60,11 @@ def create_app() -> Flask:
     @app.get("/scripts")
     def scripts_page():
         return render_template("scripts.html")
+    
+    @app.get("/explore")
+    def explore():
+        return render_template("explore.html")
+
 
     return app
 

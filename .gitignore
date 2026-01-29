@@ -2,3 +2,8 @@ tempCodeRunnerFile.py
 .venv/*
 .vscode/*
 .env
+models/__pycache__/*
+services/__pycache__/*
+api/__pycache__/**
+web/__pycache__/*
+.vscode/

@@ -1,0 +1,9 @@
+{
+  "start_equity": 50000.0,
+  "end_equity": 52894.7105289471,
+  "total_return": 0.05789421057894195,
+  "annualized_vol": 0.0005019669411583669,
+  "sharpe": 975.2269789988261,
+  "max_drawdown": 0.0,
+  "num_bars": 30
+}
